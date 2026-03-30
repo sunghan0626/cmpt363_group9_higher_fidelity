@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>AI Coach Chat</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 20px 0;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 6px 10px;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-weight: 400;
+        color: #000000;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .top-row {
+        position: relative;
+        min-height: 46px;
+      }
+
+      .back-btn {
+        position: absolute;
+        left: -2px;
+        top: 0;
+        width: 42px;
+        height: 42px;
+        border: none;
+        background: transparent;
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .camera-btn {
+        position: absolute;
+        right: 0;
+        top: 2px;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: 3px solid #2f98fb;
+        background: #ffffff;
+        color: #2f98fb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .camera-btn svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .chat-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 26px 6px 0;
+      }
+
+      .thumbnail-row {
+        display: flex;
+        justify-content: flex-end;
+        padding-right: 2px;
+      }
+
+      .exercise-thumb {
+        width: 66px;
+        height: 79px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .exercise-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .bubble {
+        max-width: 290px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: #5a6773;
+        background: #abd7ff;
+      }
+
+      .bubble--user {
+        align-self: flex-end;
+        margin-top: 12px;
+        border-top-right-radius: 12px;
+      }
+
+      .bubble--assistant {
+        align-self: flex-start;
+        margin-top: 20px;
+        border-top-left-radius: 12px;
+        max-width: 248px;
+        text-align: center;
+      }
+
+      .input-wrap {
+        padding: 10px 8px 0;
+      }
+
+      .search-shell {
+        position: relative;
+        min-height: 40px;
+        padding: 0 52px 0 40px;
+        border-radius: 20px;
+        background: #abd7ff;
+        display: flex;
+        align-items: center;
+      }
+
+      .search-shell__icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #5c7693;
+        font-size: 18px;
+      }
+
+      .chat-input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: #4f6780;
+        font-family: "Poppins", Helvetica;
+        font-size: 15px;
+        outline: none;
+      }
+
+      .send-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid #2a3748;
+        background: #ffffff;
+        color: #2a3748;
+        font-size: 20px;
+        line-height: 1;
+        transform: translateY(-50%);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .keyboard {
+        margin-top: 10px;
+        background: #eceef3;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        padding: 8px 8px 16px;
+      }
+
+      .suggestions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .suggestion {
+        min-height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.34);
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        font-weight: 600;
+        color: #494f59;
+      }
+
+      .keys {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .key-row {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .key {
+        height: 34px;
+        min-width: 28px;
+        padding: 0 6px;
+        border-radius: 7px;
+        background: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        font-weight: 500;
+        color: #666c75;
+        box-shadow: 0 1px 0 rgba(159, 164, 175, 0.85);
+      }
+
+      .key--wide {
+        min-width: 62px;
+      }
+
+      .bottom-icons {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 22px 4px;
+        color: #78809c;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="top-row">
+        <button
+          class="back-btn"
+          type="button"
+          aria-label="Back to session"
+          onclick="window.location.href='session.html';"
+        >
+          &larr;
+        </button>
+
+        <button class="camera-btn" type="button" aria-label="Exercise image">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M8 6L9.6 4.5H14.4L16 6H19C20.1 6 21 6.9 21 8V17C21 18.1 20.1 19 19 19H5C3.9 19 3 18.1 3 17V8C3 6.9 3.9 6 5 6H8Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <circle cx="12" cy="12.5" r="3.5" stroke="currentColor" stroke-width="2" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="chat-body" id="chat-body">
+        <div class="thumbnail-row">
+          <div class="exercise-thumb" id="exercise-thumb" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="input-wrap">
+        <div class="search-shell">
+          <span class="search-shell__icon" aria-hidden="true">&#128269;</span>
+          <input
+            class="chat-input"
+            id="chat-input"
+            type="text"
+            placeholder="Search"
+            autocomplete="off"
+          />
+          <button class="send-btn" type="button" onclick="handleSend()">+</button>
+        </div>
+      </div>
+
+      <div class="keyboard" aria-hidden="true">
+        <div class="suggestions">
+          <div class="suggestion">"The"</div>
+          <div class="suggestion">the</div>
+          <div class="suggestion">to</div>
+        </div>
+
+        <div class="keys">
+          <div class="key-row">
+            <div class="key">q</div>
+            <div class="key">w</div>
+            <div class="key">e</div>
+            <div class="key">r</div>
+            <div class="key">t</div>
+            <div class="key">y</div>
+            <div class="key">u</div>
+            <div class="key">i</div>
+            <div class="key">o</div>
+            <div class="key">p</div>
+          </div>
+          <div class="key-row">
+            <div class="key">a</div>
+            <div class="key">s</div>
+            <div class="key">d</div>
+            <div class="key">f</div>
+            <div class="key">g</div>
+            <div class="key">h</div>
+            <div class="key">j</div>
+            <div class="key">k</div>
+            <div class="key">l</div>
+          </div>
+          <div class="key-row">
+            <div class="key key--wide">&#8679;</div>
+            <div class="key">z</div>
+            <div class="key">x</div>
+            <div class="key">c</div>
+            <div class="key">v</div>
+            <div class="key">b</div>
+            <div class="key">n</div>
+            <div class="key">m</div>
+            <div class="key key--wide">&#9003;</div>
+          </div>
+          <div class="key-row">
+            <div class="key key--wide">ABC</div>
+            <div class="key" style="min-width: 150px"></div>
+            <div class="key key--wide">&#8629;</div>
+          </div>
+        </div>
+
+        <div class="bottom-icons">
+          <span>&#9786;</span>
+          <span>&#127908;</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const plan = ensureSessionState(getOrCreateGeneratedWorkoutPlan());
+      const exercise =
+        plan.exercises[plan.session && !plan.session.isCompleted
+          ? plan.session.currentExerciseIndex
+          : 0];
+      const chatBody = document.getElementById("chat-body");
+      const chatInput = document.getElementById("chat-input");
+
+      document.getElementById("exercise-thumb").innerHTML =
+        `<img src="${getExerciseImageSrc(exercise.name)}" alt="${exercise.name} reference" />`;
+
+      appendBubble(
+        "user",
+        "What is this exercise called? What does it do?"
+      );
+
+      requestCoachReply("What is this exercise called? What does it do?");
+
+      chatInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          handleSend();
+        }
+      });
+
+      function appendBubble(role, text) {
+        const bubble = document.createElement("div");
+        bubble.className = `bubble bubble--${role}`;
+        bubble.textContent = text;
+        chatBody.appendChild(bubble);
+        bubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+
+      async function fetchCoachAnswer(question) {
+        const payload = {
+          exerciseName: exercise.name,
+          prescription: exercise.prescription,
+          exerciseInstructions: exercise.instructions,
+          selectedGoals: plan.goals || [],
+          intensity: plan.intensity || "",
+          beginner: plan.beginner || "",
+          userQuestion: question
+        };
+
+        try {
+          const response = await fetch("/ask_coach", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`Coach backend returned ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (!data || typeof data.answer !== "string" || !data.answer.trim()) {
+            throw new Error("Coach backend returned an empty answer.");
+          }
+
+          return data.answer.trim();
+        } catch (error) {
+          console.warn("Falling back to local coach response.", error);
+          return getChatbotResponse(plan, exercise, question);
+        }
+      }
+
+      async function requestCoachReply(question) {
+        const answer = await fetchCoachAnswer(question);
+        appendBubble("assistant", answer);
+      }
+
+      function handleSend() {
+        const question = chatInput.value.trim();
+
+        if (!question) {
+          return;
+        }
+
+        appendBubble("user", question);
+        chatInput.value = "";
+        requestCoachReply(question);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Workout Session</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 24px 24px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 2px 10px;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-weight: 400;
+        color: #000000;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .nav-layer {
+        position: relative;
+        min-height: 52px;
+      }
+
+      .back-btn,
+      .close-btn {
+        position: absolute;
+        top: 0;
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .back-btn {
+        left: -4px;
+      }
+
+      .back-btn span {
+        font-size: 28px;
+        color: #0d0d0d;
+        line-height: 1;
+      }
+
+      .close-btn {
+        right: -2px;
+      }
+
+      .close-btn span {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid #ff7979;
+        color: #ff7979;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 16px;
+        line-height: 1;
+        box-sizing: border-box;
+      }
+
+      .session-stage {
+        flex: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .exercise-shell {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .exercise-card {
+        width: calc(100% - 30px);
+        max-width: 322px;
+        padding: 12px 12px 16px;
+        background: #f7f7f7;
+        border-radius: 14px;
+        border: 1px solid rgba(204, 204, 204, 0.95);
+        box-shadow: 0 3px 10px rgba(74, 74, 74, 0.26);
+        text-align: center;
+      }
+
+      .exercise-art-frame {
+        height: 158px;
+        border-radius: 10px;
+        border: 3px solid #e3e3e3;
+        background: #efefef;
+        overflow: hidden;
+      }
+
+      .exercise-art {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      .exercise-title {
+        margin: 14px 0 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 24px;
+        line-height: 28px;
+        font-weight: 600;
+        color: #2f98fb;
+      }
+
+      .exercise-prescription {
+        margin: 6px 0 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 15px;
+        line-height: 19px;
+        font-weight: 600;
+        color: #969696;
+      }
+
+      .exercise-summary {
+        margin: 18px auto 0;
+        max-width: 238px;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 600;
+        color: #676767;
+      }
+
+      .instructions-btn {
+        min-width: 128px;
+        min-height: 34px;
+        margin-top: 18px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 18px;
+        background: #a8a8a8;
+        color: #ffffff;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .instructions-panel {
+        margin: 12px auto 0;
+        max-width: 252px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #ffffff;
+        text-align: left;
+        box-shadow: inset 0 0 0 1px rgba(223, 223, 223, 0.95);
+      }
+
+      .instructions-panel[hidden] {
+        display: none;
+      }
+
+      .instructions-label {
+        margin: 0 0 8px;
+        font-family: "Poppins", Helvetica;
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 600;
+        color: #8a8a8a;
+      }
+
+      .instruction-list {
+        margin: 0;
+        padding-left: 16px;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        line-height: 17px;
+        color: #545454;
+      }
+
+      .instruction-list li + li {
+        margin-top: 6px;
+      }
+
+      .card-progress {
+        margin: 12px 0 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 15px;
+        line-height: 18px;
+        font-weight: 600;
+        color: #8d8d8d;
+      }
+
+      .next-arrow-btn {
+        width: 36px;
+        height: 52px;
+        border: none;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #2f98fb;
+        font-size: 60px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .next-arrow-btn[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .below-card {
+        width: 100%;
+        margin-top: 54px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .alt-btn {
+        width: 184px;
+        min-height: 38px;
+        border: none;
+        border-radius: 20px;
+        background: #2f98fb;
+        color: #ffffff;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .previous-link {
+        margin-top: 12px;
+        border: none;
+        background: transparent;
+        color: #979797;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .previous-link[hidden] {
+        display: none;
+      }
+
+      .time-panel {
+        width: calc(100% - 24px);
+        margin-top: auto;
+        margin-bottom: 4px;
+      }
+
+      .time-track {
+        position: relative;
+        width: 100%;
+        height: 4px;
+        border-radius: 999px;
+        background: #dfdfdf;
+        overflow: hidden;
+      }
+
+      .time-track__fill {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: #2f98fb;
+        transition: width 0.2s ease;
+      }
+
+      .time-dot {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #2f98fb;
+        transform: translateY(-50%);
+      }
+
+      .time-copy {
+        margin: 10px 0 0;
+        text-align: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 600;
+        color: #c5c5c5;
+      }
+
+      .time-copy span {
+        margin-left: 8px;
+        color: #2f98fb;
+        font-size: 18px;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 34px;
+        left: 50%;
+        transform: translateX(-50%) translateY(18px);
+        background: #1d1b20;
+        color: #ffffff;
+        padding: 10px 18px;
+        border-radius: 20px;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 14px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s, transform 0.25s;
+        z-index: 20;
+      }
+
+      .toast--visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="nav-layer">
+        <button
+          class="back-btn"
+          type="button"
+          aria-label="Go back to workout preview"
+          onclick="window.location.href='workout.html';"
+        >
+          <span aria-hidden="true">&larr;</span>
+        </button>
+
+        <button
+          class="close-btn"
+          type="button"
+          aria-label="Close session"
+          onclick="window.location.href='workout.html';"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <main class="session-stage">
+        <div class="exercise-shell">
+          <section class="exercise-card">
+            <div class="exercise-art-frame">
+              <img
+                class="exercise-art"
+                id="exercise-art"
+                src="{{ url_for('static', filename='images/deepsquat.png') }}"
+                alt="Exercise demonstration"
+              />
+            </div>
+            <h1 class="exercise-title" id="exercise-name"></h1>
+            <p class="exercise-prescription" id="exercise-prescription"></p>
+            <p class="exercise-summary" id="exercise-summary"></p>
+
+            <button
+              class="instructions-btn"
+              id="instructions-btn"
+              type="button"
+              onclick="toggleInstructions()"
+            >
+              Instructions
+            </button>
+
+            <div class="instructions-panel" id="instructions-panel" hidden>
+              <p class="instructions-label">How to do it</p>
+              <ol class="instruction-list" id="instruction-list"></ol>
+            </div>
+
+            <p class="card-progress" id="exercise-progress"></p>
+          </section>
+
+          <button
+            class="next-arrow-btn"
+            id="next-arrow-btn"
+            type="button"
+            aria-label="Go to next exercise"
+            onclick="handleNextExercise()"
+          >
+            &#8250;
+          </button>
+        </div>
+
+        <div class="below-card">
+          <button class="alt-btn" type="button" onclick="handleTryAlternative()">
+            Try Alternative
+          </button>
+          <button
+            class="previous-link"
+            id="previous-link"
+            type="button"
+            onclick="handleBackExercise()"
+            hidden
+          >
+            Previous exercise
+          </button>
+        </div>
+
+        <div class="time-panel">
+          <div class="time-track">
+            <div class="time-track__fill" id="time-fill"></div>
+            <div class="time-dot" aria-hidden="true"></div>
+          </div>
+          <p class="time-copy">
+            Expected time <span id="expected-time"></span>
+          </p>
+        </div>
+      </main>
+
+      <div class="toast" id="toast" aria-live="polite"></div>
+    </div>
+
+    <script>
+      const plan = ensureSessionState(getOrCreateGeneratedWorkoutPlan());
+      let toastTimeoutId;
+      let instructionsVisible = false;
+
+      if (plan.session.isCompleted) {
+        window.location.href = "complete.html";
+      } else if (plan.session.breakState) {
+        window.location.href = "break.html";
+      } else {
+        saveGeneratedWorkoutPlan(plan);
+        renderSession();
+      }
+
+      function getCurrentExercise() {
+        return plan.exercises[plan.session.currentExerciseIndex];
+      }
+
+      function getProgressRatio() {
+        if (plan.exercises.length <= 1) {
+          return 1;
+        }
+
+        return plan.session.currentExerciseIndex / (plan.exercises.length - 1);
+      }
+
+      function getSummaryCopy(exercise) {
+        const focus = getExerciseFocusText(exercise.name);
+        return (
+          `${exercise.name} is a great exercise because it helps develop ${focus} ` +
+          `while supporting your current ${plan.intensity.toLowerCase()} workout plan.`
+        );
+      }
+
+      function renderSession() {
+        const currentExercise = getCurrentExercise();
+        const instructionList = document.getElementById("instruction-list");
+        const remainingMinutes = getRemainingSessionMinutes(
+          plan,
+          plan.session.currentExerciseIndex
+        );
+
+        document.getElementById("exercise-art").src =
+          getExerciseImageSrc(currentExercise.name);
+        document.getElementById("exercise-art").alt =
+          `${currentExercise.name} demonstration`;
+        document.getElementById("exercise-name").textContent = currentExercise.name;
+        document.getElementById("exercise-prescription").textContent =
+          currentExercise.prescription;
+        document.getElementById("exercise-summary").textContent =
+          getSummaryCopy(currentExercise);
+        document.getElementById("exercise-progress").textContent =
+          `${plan.session.currentExerciseIndex + 1} / ${plan.exercises.length}`;
+        document.getElementById("expected-time").textContent =
+          `${remainingMinutes} minutes`;
+        document.getElementById("time-fill").style.width =
+          `${Math.max(2, getProgressRatio() * 100)}%`;
+
+        instructionList.innerHTML = "";
+        currentExercise.instructions.forEach((step) => {
+          const item = document.createElement("li");
+          item.textContent = step;
+          instructionList.appendChild(item);
+        });
+
+        document.getElementById("next-arrow-btn").ariaLabel =
+          plan.session.currentExerciseIndex === plan.exercises.length - 1
+            ? "Finish session"
+            : "Go to next exercise";
+        document.getElementById("previous-link").hidden =
+          plan.session.currentExerciseIndex === 0;
+        document.getElementById("instructions-btn").textContent = instructionsVisible
+          ? "Hide Instructions"
+          : "Instructions";
+        document.getElementById("instructions-panel").hidden = !instructionsVisible;
+      }
+
+      function toggleInstructions() {
+        instructionsVisible = !instructionsVisible;
+        renderSession();
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("toast--visible");
+        window.clearTimeout(toastTimeoutId);
+        toastTimeoutId = window.setTimeout(() => {
+          toast.classList.remove("toast--visible");
+        }, 2200);
+      }
+
+      function handleBackExercise() {
+        if (plan.session.currentExerciseIndex === 0) {
+          return;
+        }
+
+        plan.session.currentExerciseIndex -= 1;
+        plan.session.breakState = null;
+        saveGeneratedWorkoutPlan(plan);
+        renderSession();
+      }
+
+      function handleNextExercise() {
+        if (plan.session.currentExerciseIndex >= plan.exercises.length - 1) {
+          plan.session.isCompleted = true;
+          plan.session.breakState = null;
+          saveGeneratedWorkoutPlan(plan);
+          window.location.href = "complete.html";
+          return;
+        }
+
+        plan.session.breakState = {
+          nextExerciseIndex: plan.session.currentExerciseIndex + 1,
+          startedAt: Date.now(),
+          durationSeconds: 30
+        };
+        saveGeneratedWorkoutPlan(plan);
+        window.location.href = "break.html";
+      }
+
+      function handleTryAlternative() {
+        const replacement = getAlternativeExercise(plan, plan.session.currentExerciseIndex);
+
+        if (!replacement) {
+          showToast("No alternative available");
+          return;
+        }
+
+        plan.exercises[plan.session.currentExerciseIndex] = replacement;
+        saveGeneratedWorkoutPlan(plan);
+        renderSession();
+        showToast(`Swapped to ${replacement.name}`);
+      }
+    </script>
+  </body>
+</html>

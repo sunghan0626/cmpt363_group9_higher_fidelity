@@ -1,0 +1,42 @@
+:root {
+  --m-3syslightsceondary: rgba(98, 91, 113, 1);
+  --m3syslighton-surface-variant: rgba(73, 69, 79, 1);
+  --m3syslightoutline-variant: rgba(202, 196, 208, 1);
+  --m-3syslightprimary: rgba(103, 80, 164, 1);
+  --m3syslighton-surface: rgba(29, 27, 32, 1);
+
+  --body-regular-font-family: "SF Pro", Helvetica;
+  --body-regular-font-weight: 400;
+  --body-regular-font-size: 17px;
+  --body-regular-letter-spacing: -0.4300000071525574px;
+  --body-regular-line-height: 22px;
+  --body-regular-font-style: normal;
+
+  --single-line-body-base-font-family: "Inter", Helvetica;
+  --single-line-body-base-font-weight: 400;
+  --single-line-body-base-font-size: 16px;
+  --single-line-body-base-letter-spacing: 0px;
+  --single-line-body-base-line-height: 100%;
+  --single-line-body-base-font-style: normal;
+
+  --m3-title-small-emphasized-font-family: "Roboto", Helvetica;
+  --m3-title-small-emphasized-font-weight: 600;
+  --m3-title-small-emphasized-font-size: 14px;
+  --m3-title-small-emphasized-letter-spacing: 0.10000000149011612px;
+  --m3-title-small-emphasized-line-height: 20px;
+  --m3-title-small-emphasized-font-style: normal;
+
+  --m3-body-medium-font-family: "Roboto", Helvetica;
+  --m3-body-medium-font-weight: 400;
+  --m3-body-medium-font-size: 14px;
+  --m3-body-medium-letter-spacing: 0.25px;
+  --m3-body-medium-line-height: 20px;
+  --m3-body-medium-font-style: normal;
+
+  --m3-label-large-font-family: "Roboto", Helvetica;
+  --m3-label-large-font-weight: 500;
+  --m3-label-large-font-size: 14px;
+  --m3-label-large-letter-spacing: 0.10000000149011612px;
+  --m3-label-large-line-height: 20px;
+  --m3-label-large-font-style: normal;
+}

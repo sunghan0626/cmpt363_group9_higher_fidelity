@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Workout Setup</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background-color: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 40px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 24px 19px;
+        flex-shrink: 0;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+        flex: 0 0 auto;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-weight: 400;
+        color: #000000;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .arrow-back-btn {
+        position: absolute;
+        top: 52px;
+        left: 20px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: background 0.2s;
+        z-index: 10;
+      }
+
+      .arrow-back-btn:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+      }
+
+      .arrow-back-icon {
+        font-size: 28px;
+        line-height: 1;
+        color: #000000;
+      }
+
+      .header-card {
+        width: calc(100% - 64px);
+        max-width: 316px;
+        margin: 12px auto 0;
+        background-color: #d6e6f5;
+        border-radius: 28px;
+        padding: 24px 24px 20px;
+        text-align: center;
+      }
+
+      .headline {
+        margin: 0;
+        font-family: var(--m3-title-small-emphasized-font-family);
+        font-weight: var(--m3-title-small-emphasized-font-weight);
+        color: #49454f;
+        font-size: 20px;
+        line-height: 24px;
+      }
+
+      .supporting-text {
+        margin: 10px 0 0;
+        font-family: var(--m3-body-medium-font-family);
+        font-weight: var(--m3-body-medium-font-weight);
+        color: var(--m3syslighton-surface-variant);
+        font-size: var(--m3-body-medium-font-size);
+        line-height: var(--m3-body-medium-line-height);
+      }
+
+      .summary-card,
+      .section-card {
+        width: calc(100% - 58px);
+        max-width: 349px;
+        margin: 18px auto 0;
+        background-color: #f3f3f3;
+        border-radius: 16px;
+        box-shadow: inset 0 4px 4px #00000024;
+        padding: 16px;
+      }
+
+      .summary-card {
+        background-color: #f7f7f7;
+      }
+
+      .section-label,
+      .summary-label {
+        margin: 0 0 12px;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.25px;
+        color: #49454f;
+      }
+
+      .summary-note {
+        margin: 0 0 12px;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 13px;
+        line-height: 18px;
+        color: #6e6a75;
+      }
+
+      .goal-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .goal-chip,
+      .choice-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: none;
+        background-color: #b1b1b1;
+        color: #f5f5f5;
+        font-family: var(--single-line-body-base-font-family);
+        font-size: var(--single-line-body-base-font-size);
+        line-height: 1.2;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+      }
+
+      .goal-chip {
+        min-height: auto;
+        background-color: #d9e6f3;
+        color: #49454f;
+        cursor: default;
+      }
+
+      .choice-chip:hover:not(.choice-chip--selected) {
+        background-color: #9a9a9a;
+      }
+
+      .choice-chip:active:not(:disabled) {
+        transform: scale(0.97);
+      }
+
+      .choice-chip--selected {
+        background-color: #289cff;
+      }
+
+      .choice-row,
+      .days-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .choice-row .choice-chip {
+        min-width: 96px;
+      }
+
+      .days-grid .choice-chip {
+        min-width: 42px;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .section-helper,
+      .empty-state {
+        margin: 0;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 13px;
+        line-height: 18px;
+        color: #7a7a7a;
+      }
+
+      .next-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 28px;
+        padding-bottom: 12px;
+      }
+
+      .next-btn {
+        width: 245px;
+        min-height: 41px;
+        background-color: #289cff;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        font-family: "Poppins", Helvetica;
+        font-weight: 400;
+        color: #ffffff;
+        font-size: 20px;
+        text-align: center;
+        transition: background-color 0.2s, opacity 0.2s, transform 0.1s;
+      }
+
+      .next-btn:hover:not(:disabled) {
+        background-color: #1887e8;
+      }
+
+      .next-btn:active:not(:disabled) {
+        transform: scale(0.97);
+      }
+
+      .next-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      @media (max-width: 420px) {
+        .header-card,
+        .summary-card,
+        .section-card {
+          width: calc(100% - 40px);
+        }
+
+        .choice-row .choice-chip {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <button
+        class="arrow-back-btn"
+        type="button"
+        aria-label="Go back to goals"
+        onclick="window.location.href='index.html';"
+      >
+        <span class="arrow-back-icon" aria-hidden="true">&larr;</span>
+      </button>
+
+      <section class="header-card">
+        <h1 class="headline">Create your workout</h1>
+        <p class="supporting-text">
+          Pick your intensity, weekly workout rhythm, and experience level.
+        </p>
+      </section>
+
+      <section class="summary-card">
+        <p class="summary-label">Goals selected</p>
+        <p class="summary-note">Saved from the previous step.</p>
+        <div class="goal-list" id="goal-list"></div>
+        <p class="empty-state" id="empty-state" hidden>
+          No goals selected yet. Go back and choose up to two goals first.
+        </p>
+      </section>
+
+      <section class="section-card">
+        <p class="section-label">Level of intensity</p>
+        <div class="choice-row" id="intensity-options"></div>
+      </section>
+
+      <section class="section-card">
+        <p class="section-label">Workout days per week</p>
+        <div class="days-grid" id="days-options"></div>
+      </section>
+
+      <section class="section-card">
+        <p class="section-label">Are you a beginner?</p>
+        <div class="choice-row" id="beginner-options"></div>
+      </section>
+
+      <div class="next-container">
+        <button
+          class="next-btn"
+          id="create-workout-btn"
+          type="button"
+          onclick="handleContinue()"
+        >
+          Create Workout sessions
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const GOALS_KEY = "easyfit.selectedGoals";
+      const WORKOUT_SETUP_KEY = "easyfit.workoutSetup";
+      const LEGACY_GOALS_KEY = "easfit.selectedGoals";
+      const LEGACY_WORKOUT_SETUP_KEY = "easfit.workoutSetup";
+      const intensityOptions = ["Easy", "Moderate", "Intense"];
+      const beginnerOptions = ["Yes", "No"];
+      const dayOptions = [1, 2, 3, 4, 5, 6, 7];
+
+      migrateStorageKey(LEGACY_GOALS_KEY, GOALS_KEY);
+      migrateStorageKey(LEGACY_WORKOUT_SETUP_KEY, WORKOUT_SETUP_KEY);
+
+      const state = loadWorkoutSetup();
+
+      function migrateStorageKey(legacyKey, nextKey) {
+        if (localStorage.getItem(nextKey) !== null) {
+          return;
+        }
+
+        const legacyValue = localStorage.getItem(legacyKey);
+
+        if (legacyValue === null) {
+          return;
+        }
+
+        localStorage.setItem(nextKey, legacyValue);
+        localStorage.removeItem(legacyKey);
+      }
+
+      function loadWorkoutSetup() {
+        const defaultState = {
+          intensity: "",
+          daysPerWeek: "",
+          beginner: ""
+        };
+
+        try {
+          const savedState = JSON.parse(localStorage.getItem(WORKOUT_SETUP_KEY));
+
+          if (!savedState || typeof savedState !== "object") {
+            return defaultState;
+          }
+
+          return {
+            intensity: intensityOptions.includes(savedState.intensity)
+              ? savedState.intensity
+              : "",
+            daysPerWeek: dayOptions.includes(savedState.daysPerWeek)
+              ? savedState.daysPerWeek
+              : "",
+            beginner: beginnerOptions.includes(savedState.beginner)
+              ? savedState.beginner
+              : ""
+          };
+        } catch (error) {
+          console.warn("Unable to read workout setup from localStorage.", error);
+          return defaultState;
+        }
+      }
+
+      function saveWorkoutSetup() {
+        try {
+          localStorage.setItem(WORKOUT_SETUP_KEY, JSON.stringify(state));
+        } catch (error) {
+          console.warn("Unable to save workout setup to localStorage.", error);
+        }
+      }
+
+      function getSavedGoals() {
+        try {
+          const goals = JSON.parse(localStorage.getItem(GOALS_KEY));
+          return Array.isArray(goals) ? goals.slice(0, 2) : [];
+        } catch (error) {
+          console.warn("Unable to read selected goals from localStorage.", error);
+          return [];
+        }
+      }
+
+      function renderGoals() {
+        const goalList = document.getElementById("goal-list");
+        const emptyState = document.getElementById("empty-state");
+        const savedGoals = getSavedGoals();
+
+        goalList.innerHTML = "";
+
+        if (savedGoals.length === 0) {
+          emptyState.hidden = false;
+          return;
+        }
+
+        emptyState.hidden = true;
+
+        savedGoals.forEach((goal) => {
+          const chip = document.createElement("div");
+          chip.className = "goal-chip";
+          chip.textContent = goal;
+          goalList.appendChild(chip);
+        });
+      }
+
+      function createChoiceButton(value, selectedValue, onClick) {
+        const button = document.createElement("button");
+        button.className =
+          "choice-chip" + (value === selectedValue ? " choice-chip--selected" : "");
+        button.type = "button";
+        button.textContent = value;
+        button.setAttribute("aria-pressed", value === selectedValue ? "true" : "false");
+        button.addEventListener("click", onClick);
+        return button;
+      }
+
+      function renderIntensityOptions() {
+        const container = document.getElementById("intensity-options");
+        container.innerHTML = "";
+
+        intensityOptions.forEach((option) => {
+          container.appendChild(
+            createChoiceButton(option, state.intensity, () => {
+              state.intensity = option;
+              saveWorkoutSetup();
+              render();
+            })
+          );
+        });
+      }
+
+      function renderDaysOptions() {
+        const container = document.getElementById("days-options");
+        container.innerHTML = "";
+
+        dayOptions.forEach((dayCount) => {
+          container.appendChild(
+            createChoiceButton(String(dayCount), String(state.daysPerWeek), () => {
+              state.daysPerWeek = dayCount;
+              saveWorkoutSetup();
+              render();
+            })
+          );
+        });
+      }
+
+      function renderBeginnerOptions() {
+        const container = document.getElementById("beginner-options");
+        container.innerHTML = "";
+
+        beginnerOptions.forEach((option) => {
+          container.appendChild(
+            createChoiceButton(option, state.beginner, () => {
+              state.beginner = option;
+              saveWorkoutSetup();
+              render();
+            })
+          );
+        });
+      }
+
+      function updateActionButton() {
+        const button = document.getElementById("create-workout-btn");
+        const isComplete =
+          Boolean(state.intensity) &&
+          dayOptions.includes(state.daysPerWeek) &&
+          Boolean(state.beginner);
+
+        button.disabled = !isComplete;
+      }
+
+      function render() {
+        renderGoals();
+        renderIntensityOptions();
+        renderDaysOptions();
+        renderBeginnerOptions();
+        updateActionButton();
+      }
+
+      function handleContinue() {
+        if (document.getElementById("create-workout-btn").disabled) {
+          return;
+        }
+
+        saveWorkoutSetup();
+        window.location.href = "loading.html";
+      }
+
+      saveWorkoutSetup();
+      render();
+    </script>
+  </body>
+</html>

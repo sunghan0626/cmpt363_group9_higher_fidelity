@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Break</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 28px 34px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 0 12px;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-weight: 400;
+        color: #000000;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .countdown {
+        margin: -18px 0 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 56px;
+        line-height: 1;
+        font-weight: 600;
+        color: #289cff;
+      }
+
+      .track {
+        width: 78%;
+        height: 4px;
+        margin-top: 30px;
+        border-radius: 999px;
+        background: #e6e6e6;
+        overflow: hidden;
+      }
+
+      .track-fill {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: #289cff;
+      }
+
+      .label {
+        margin: 8px 0 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 18px;
+        font-weight: 600;
+        color: #289cff;
+      }
+
+      .skip-link {
+        margin-top: 22px;
+        border: none;
+        background: transparent;
+        color: #9a9a9a;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="content">
+        <p class="countdown" id="countdown">0:30</p>
+        <div class="track">
+          <div class="track-fill" id="track-fill"></div>
+        </div>
+        <p class="label">Break.</p>
+        <button class="skip-link" type="button" onclick="finishBreak()">
+          Skip break
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const plan = ensureSessionState(getOrCreateGeneratedWorkoutPlan());
+      const breakState = plan.session.breakState;
+      let intervalId;
+
+      if (!breakState) {
+        window.location.href = "session.html";
+      } else {
+        updateCountdown();
+        intervalId = window.setInterval(updateCountdown, 250);
+      }
+
+      function formatSeconds(totalSeconds) {
+        const clamped = Math.max(0, totalSeconds);
+        const minutes = Math.floor(clamped / 60);
+        const seconds = clamped % 60;
+        return `${minutes}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function updateCountdown() {
+        const endAt = breakState.startedAt + breakState.durationSeconds * 1000;
+        const remainingMs = Math.max(0, endAt - Date.now());
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
+        const elapsedRatio =
+          1 - remainingMs / (breakState.durationSeconds * 1000 || 1);
+
+        document.getElementById("countdown").textContent =
+          formatSeconds(remainingSeconds);
+        document.getElementById("track-fill").style.width =
+          `${Math.min(100, Math.max(0, elapsedRatio * 100))}%`;
+
+        if (remainingMs <= 0) {
+          finishBreak();
+        }
+      }
+
+      function finishBreak() {
+        window.clearInterval(intervalId);
+        plan.session.currentExerciseIndex = Math.min(
+          breakState.nextExerciseIndex,
+          Math.max(plan.exercises.length - 1, 0)
+        );
+        plan.session.breakState = null;
+        saveGeneratedWorkoutPlan(plan);
+        window.location.href = "session.html";
+      }
+    </script>
+  </body>
+</html>

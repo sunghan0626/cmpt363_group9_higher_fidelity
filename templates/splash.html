@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>EASY FIT</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/splash.css') }}" />
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="logo">
+        <div class="logo-text" aria-label="EASY FIT">
+          EAS<span class="logo-heart">Y</span><br />FIT
+        </div>
+      </div>
+
+      <div class="start-button">
+        <button
+          class="start-btn"
+          type="button"
+          onclick="window.location.href='index.html'"
+        >
+          Start now
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

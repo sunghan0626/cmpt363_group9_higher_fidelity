@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Generating Workout</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background-color: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 28px 40px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 0 19px;
+        flex-shrink: 0;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+        flex: 0 0 auto;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-weight: 400;
+        color: #000000;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+      }
+
+      .spinner {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 4px solid #d6e6f5;
+        border-top-color: #289cff;
+        animation: spin 1s linear infinite;
+      }
+
+      .title {
+        margin: 0;
+        max-width: 220px;
+        font-family: var(--m3-title-small-emphasized-font-family);
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 30px;
+        color: #49454f;
+      }
+
+      .description {
+        margin: 0;
+        max-width: 260px;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 14px;
+        line-height: 20px;
+        color: #6e6a75;
+      }
+
+      .summary {
+        margin-top: 8px;
+        padding: 14px 16px;
+        background: #f3f3f3;
+        border-radius: 16px;
+        box-shadow: inset 0 4px 4px #00000024;
+      }
+
+      .summary-text {
+        margin: 0;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 13px;
+        line-height: 18px;
+        color: #49454f;
+      }
+
+      .back-link {
+        margin-top: 12px;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 14px;
+        color: #289cff;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="content">
+        <div class="spinner" aria-hidden="true"></div>
+        <h1 class="title">Creating your personalized workout session...</h1>
+        <p class="description">
+          This loading state simulates the AI-powered plan generation step from
+          the prototype.
+        </p>
+        <div class="summary">
+          <p class="summary-text" id="summary-text"></p>
+        </div>
+        <a class="back-link" href="next.html">Back to workout setup</a>
+      </div>
+    </div>
+
+    <script>
+      const summaryText = document.getElementById("summary-text");
+      const generatedPlan = getOrCreateGeneratedWorkoutPlan();
+
+      summaryText.textContent =
+        `${generatedPlan.title} | ${generatedPlan.totalWorkouts} workouts | ` +
+        `${generatedPlan.estimatedTotalMinutes} min total`;
+
+      window.setTimeout(() => {
+        window.location.href = "workout.html";
+      }, 1500);
+    </script>
+  </body>
+</html>

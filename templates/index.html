@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Select Goals</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <button
+        class="arrow-back-btn"
+        type="button"
+        aria-label="Go back"
+        onclick="window.location.href='splash.html';"
+      >
+        <span class="arrow-back-icon" aria-hidden="true">&larr;</span>
+      </button>
+
+      <div class="XR-XR-dialog">
+        <div class="content">
+          <div class="headline">Select goals</div>
+          <p class="supporting-text">
+            select primary goal + secondary goal for better personalization
+          </p>
+        </div>
+      </div>
+
+      <div class="included" id="selected-goals-container">
+        <div class="selected-goals-inner">
+          <p class="selected-label" id="selected-label">Selected goals</p>
+          <div class="selected-tags" id="selected-tags"></div>
+          <p class="selected-hint" id="selected-hint">
+            Tap a goal below to add it
+          </p>
+        </div>
+      </div>
+
+      <div class="can-include-section">
+        <div class="can-include-label">Available goals</div>
+        <div class="can-include-grid" id="goals-grid"></div>
+      </div>
+
+      <div class="next-container">
+        <button class="next-btn" id="next-btn" type="button" onclick="handleNext()">
+          <span id="next-btn-text">Next</span>
+        </button>
+      </div>
+
+      <div class="toast" id="toast" aria-live="polite"></div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "easyfit.selectedGoals";
+      const LEGACY_STORAGE_KEY = "easfit.selectedGoals";
+      const MAX_SELECTED = 2;
+      const allGoals = [
+        "Prevent injury",
+        "Improve stamina",
+        "Improve overall power",
+        "Improve heart and lung efficiency",
+        "Reduce stiffness",
+        "Reduce anxiety",
+        "Increase speed",
+        "Muscle Growth",
+        "Reduce body fat",
+        "Strengthen stabilizer muscles"
+      ];
+      const defaultSelectedGoals = ["Muscle Growth", "Reduce body fat"];
+
+      migrateSelectedGoalsKey();
+
+      let selected = new Set(loadSelectedGoals());
+      let toastTimeoutId;
+
+      function migrateSelectedGoalsKey() {
+        if (localStorage.getItem(STORAGE_KEY) !== null) {
+          return;
+        }
+
+        const legacyValue = localStorage.getItem(LEGACY_STORAGE_KEY);
+
+        if (legacyValue === null) {
+          return;
+        }
+
+        localStorage.setItem(STORAGE_KEY, legacyValue);
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+      }
+
+      function sanitizeGoals(goals) {
+        if (!Array.isArray(goals)) {
+          return [];
+        }
+
+        return goals
+          .filter((goal, index) => allGoals.includes(goal) && goals.indexOf(goal) === index)
+          .slice(0, MAX_SELECTED);
+      }
+
+      function loadSelectedGoals() {
+        try {
+          const savedGoals = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          const sanitizedSavedGoals = sanitizeGoals(savedGoals);
+
+          if (sanitizedSavedGoals.length > 0) {
+            return sanitizedSavedGoals;
+          }
+        } catch (error) {
+          console.warn("Unable to read saved goals from localStorage.", error);
+        }
+
+        return sanitizeGoals(defaultSelectedGoals);
+      }
+
+      function saveSelectedGoals() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selected)));
+        } catch (error) {
+          console.warn("Unable to save selected goals to localStorage.", error);
+        }
+      }
+
+      function render() {
+        renderSelectedTags();
+        renderGoalsGrid();
+        updateNextBtn();
+      }
+
+      function renderSelectedTags() {
+        const container = document.getElementById("selected-tags");
+        const hint = document.getElementById("selected-hint");
+        const label = document.getElementById("selected-label");
+
+        container.innerHTML = "";
+
+        if (selected.size === 0) {
+          hint.style.display = "block";
+          label.style.display = "none";
+          return;
+        }
+
+        hint.style.display = "none";
+        label.style.display = "block";
+
+        selected.forEach((goal) => {
+          const tag = document.createElement("div");
+          const labelText = document.createElement("span");
+          const removeButton = document.createElement("button");
+
+          tag.className = "tag selected-tag";
+
+          labelText.className = "tag-2";
+          labelText.textContent = goal;
+
+          removeButton.className = "remove-btn";
+          removeButton.type = "button";
+          removeButton.setAttribute("aria-label", `Remove ${goal}`);
+          removeButton.innerHTML =
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="#f5f5f5"/></svg>';
+          removeButton.addEventListener("click", () => toggleGoal(goal));
+
+          tag.appendChild(labelText);
+          tag.appendChild(removeButton);
+          container.appendChild(tag);
+        });
+      }
+
+      function renderGoalsGrid() {
+        const grid = document.getElementById("goals-grid");
+        grid.innerHTML = "";
+
+        allGoals.forEach((goal) => {
+          const isSelected = selected.has(goal);
+          const button = document.createElement("button");
+          const icon = document.createElement("span");
+          const label = document.createElement("span");
+
+          button.className =
+            "goal-chip" + (isSelected ? " goal-chip--selected" : "");
+          button.type = "button";
+          button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+          button.addEventListener("click", () => toggleGoal(goal));
+
+          icon.className = "chip-icon";
+          icon.innerHTML = isSelected
+            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#f5f5f5"/></svg>'
+            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#f5f5f5"/></svg>';
+
+          label.className = "chip-label";
+          label.textContent = goal;
+
+          button.appendChild(icon);
+          button.appendChild(label);
+          grid.appendChild(button);
+        });
+      }
+
+      function toggleGoal(goal) {
+        if (selected.has(goal)) {
+          selected.delete(goal);
+        } else {
+          if (selected.size >= MAX_SELECTED) {
+            showToast(`Select up to ${MAX_SELECTED} goals`);
+            return;
+          }
+
+          selected.add(goal);
+        }
+
+        saveSelectedGoals();
+        render();
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+
+        toast.textContent = message;
+        toast.classList.add("toast--visible");
+        window.clearTimeout(toastTimeoutId);
+        toastTimeoutId = window.setTimeout(() => {
+          toast.classList.remove("toast--visible");
+        }, 2200);
+      }
+
+      function updateNextBtn() {
+        const btn = document.getElementById("next-btn");
+
+        if (selected.size === 0) {
+          btn.disabled = true;
+          btn.classList.add("next-btn--disabled");
+          return;
+        }
+
+        btn.disabled = false;
+        btn.classList.remove("next-btn--disabled");
+      }
+
+      function handleNext() {
+        if (selected.size === 0) {
+          return;
+        }
+
+        saveSelectedGoals();
+        window.location.href = "next.html";
+      }
+
+      saveSelectedGoals();
+      render();
+    </script>
+  </body>
+</html>

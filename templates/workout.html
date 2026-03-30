@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Workout Plan</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background-color: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 40px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 24px 19px;
+        flex-shrink: 0;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+        flex: 0 0 auto;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-weight: 400;
+        color: #000000;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .arrow-back-btn {
+        position: absolute;
+        top: 52px;
+        left: 20px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: background 0.2s;
+        z-index: 10;
+      }
+
+      .arrow-back-btn:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+      }
+
+      .arrow-back-icon {
+        font-size: 28px;
+        line-height: 1;
+        color: #000000;
+      }
+
+      .hero-card {
+        width: calc(100% - 58px);
+        max-width: 349px;
+        margin: 16px auto 0;
+        padding: 22px 18px 18px;
+        background-color: #d6e6f5;
+        border-radius: 28px;
+        text-align: center;
+      }
+
+      .hero-eyebrow {
+        margin: 0 0 8px;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.25px;
+        color: #6e6a75;
+      }
+
+      .hero-title {
+        margin: 0;
+        font-family: var(--m3-title-small-emphasized-font-family);
+        font-weight: 600;
+        color: #49454f;
+        font-size: 25px;
+        line-height: 30px;
+      }
+
+      .hero-summary {
+        margin: 10px 0 0;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 14px;
+        line-height: 20px;
+        color: #49454f;
+      }
+
+      .stats-card,
+      .exercise-list,
+      .meta-card {
+        width: calc(100% - 58px);
+        max-width: 349px;
+        margin: 16px auto 0;
+      }
+
+      .stats-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .stat-box,
+      .meta-card,
+      .exercise-card {
+        background: #f3f3f3;
+        border-radius: 16px;
+        box-shadow: inset 0 4px 4px #00000024;
+      }
+
+      .stat-box {
+        padding: 18px 12px;
+        text-align: center;
+      }
+
+      .stat-value {
+        margin: 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 26px;
+        line-height: 30px;
+        color: #289cff;
+      }
+
+      .stat-label {
+        margin: 6px 0 0;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 12px;
+        line-height: 16px;
+        color: #6e6a75;
+      }
+
+      .meta-card {
+        padding: 16px;
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #289cff;
+        color: #f5f5f5;
+        font-family: var(--single-line-body-base-font-family);
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .exercise-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .exercise-card {
+        padding: 14px 16px;
+      }
+
+      .exercise-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .exercise-name {
+        margin: 0;
+        font-family: var(--m3-title-small-emphasized-font-family);
+        font-size: 17px;
+        line-height: 22px;
+        color: #49454f;
+      }
+
+      .exercise-prescription {
+        margin: 6px 0 0;
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 14px;
+        line-height: 20px;
+        color: #289cff;
+      }
+
+      .exercise-index {
+        min-width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #d6e6f5;
+        color: #49454f;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+      }
+
+      .actions {
+        width: calc(100% - 58px);
+        max-width: 349px;
+        margin: 26px auto 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .start-btn {
+        width: 210px;
+        min-height: 41px;
+        background-color: #289cff;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        font-family: "Poppins", Helvetica;
+        font-weight: 400;
+        color: #ffffff;
+        font-size: 24px;
+        text-align: center;
+        transition: background-color 0.2s, transform 0.1s;
+      }
+
+      .start-btn:hover {
+        background-color: #1887e8;
+      }
+
+      .start-btn:active {
+        transform: scale(0.97);
+      }
+
+      .secondary-link {
+        font-family: var(--m3-body-medium-font-family);
+        font-size: 14px;
+        color: #289cff;
+      }
+
+      @media (max-width: 420px) {
+        .hero-card,
+        .stats-card,
+        .exercise-list,
+        .meta-card,
+        .actions {
+          width: calc(100% - 40px);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <button
+        class="arrow-back-btn"
+        type="button"
+        aria-label="Go back to workout setup"
+        onclick="window.location.href='next.html';"
+      >
+        <span class="arrow-back-icon" aria-hidden="true">&larr;</span>
+      </button>
+
+      <section class="hero-card">
+        <p class="hero-eyebrow">Today's session</p>
+        <h1 class="hero-title" id="plan-title"></h1>
+        <p class="hero-summary" id="plan-summary"></p>
+      </section>
+
+      <section class="stats-card">
+        <div class="stat-box">
+          <p class="stat-value" id="total-workouts"></p>
+          <p class="stat-label">Workouts this week</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-value" id="total-time"></p>
+          <p class="stat-label">Estimated total time</p>
+        </div>
+      </section>
+
+      <section class="meta-card">
+        <div class="meta-row" id="meta-row"></div>
+      </section>
+
+      <section class="exercise-list" id="exercise-list"></section>
+
+      <div class="actions">
+        <button class="start-btn" type="button" onclick="handleStartNow()">
+          Start now
+        </button>
+        <a class="secondary-link" href="chatbot.html">Ask AI coach</a>
+        <a class="secondary-link" href="loading.html">Regenerate preview</a>
+      </div>
+    </div>
+
+    <script>
+      const plan = getOrCreateGeneratedWorkoutPlan();
+
+      function renderPlan() {
+        document.getElementById("plan-title").textContent = plan.title;
+        document.getElementById("plan-summary").textContent =
+          `${plan.summary} ${plan.exercises.length} exercises in today's guided session.`;
+        document.getElementById("total-workouts").textContent = `${plan.totalWorkouts}`;
+        document.getElementById("total-time").textContent =
+          `${plan.estimatedTotalMinutes} min`;
+
+        renderMeta();
+        renderExercises();
+      }
+
+      function renderMeta() {
+        const metaRow = document.getElementById("meta-row");
+        const metaItems = [
+          `${plan.intensity} intensity`,
+          `${plan.estimatedSessionMinutes} min/session`,
+          `Beginner: ${plan.beginner}`,
+          ...plan.goals
+        ];
+
+        metaRow.innerHTML = "";
+
+        metaItems.forEach((item) => {
+          const chip = document.createElement("div");
+          chip.className = "meta-chip";
+          chip.textContent = item;
+          metaRow.appendChild(chip);
+        });
+      }
+
+      function renderExercises() {
+        const exerciseList = document.getElementById("exercise-list");
+        exerciseList.innerHTML = "";
+
+        plan.exercises.forEach((exercise, index) => {
+          const card = document.createElement("article");
+          const top = document.createElement("div");
+          const textBlock = document.createElement("div");
+          const title = document.createElement("h2");
+          const prescription = document.createElement("p");
+          const badge = document.createElement("div");
+
+          card.className = "exercise-card";
+          top.className = "exercise-top";
+          title.className = "exercise-name";
+          prescription.className = "exercise-prescription";
+          badge.className = "exercise-index";
+
+          title.textContent = exercise.name;
+          prescription.textContent = exercise.prescription;
+          badge.textContent = `${index + 1}`;
+
+          textBlock.appendChild(title);
+          textBlock.appendChild(prescription);
+          top.appendChild(textBlock);
+          top.appendChild(badge);
+          card.appendChild(top);
+          exerciseList.appendChild(card);
+        });
+      }
+
+      function handleStartNow() {
+        if (!plan.session || plan.session.isCompleted) {
+          resetWorkoutSession(plan);
+        } else {
+          saveGeneratedWorkoutPlan(plan);
+        }
+
+        window.location.href = "session.html";
+      }
+
+      renderPlan();
+    </script>
+  </body>
+</html>
