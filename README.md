@@ -19,4 +19,4 @@ Open `http://127.0.0.1:5000/`.
 
 ## Environment
 
-Set `OPENAI_API_KEY` as an environment variable before starting the app if you want the chatbot to use the backend AI route. Without it, the frontend keeps its local fallback behavior.
+Set `GEMINI_API_KEY` as an environment variable before starting the app if you want the chatbot to use the backend AI route. You can also set `GEMINI_MODEL` if you want to override the default model. Without the key, the frontend keeps its local fallback behavior.

@@ -2,11 +2,11 @@ import os
 import traceback
 
 from flask import Flask, abort, jsonify, render_template, request
-import openai
-from openai import OpenAI
+from google import genai
+from google.genai import types
 
 
-DEFAULT_MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")
+DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 PAIN_KEYWORDS = ("pain", "hurt", "hurts", "injury", "injured", "sharp", "worsening")
 PAGE_TEMPLATES = {
     "splash.html",
@@ -64,32 +64,27 @@ def build_user_prompt(payload: dict) -> str:
     )
 
 
-def create_openai_client() -> OpenAI:
-    api_key = os.getenv("OPENAI_API_KEY")
+def create_gemini_client() -> genai.Client:
+    api_key = os.getenv("GEMINI_API_KEY")
 
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY is not configured.")
+        raise RuntimeError("GEMINI_API_KEY is not configured.")
 
-    base_url = os.getenv("OPENAI_BASE_URL")
-
-    if base_url:
-        return OpenAI(api_key=api_key, base_url=base_url)
-
-    return OpenAI(api_key=api_key)
+    return genai.Client(api_key=api_key)
 
 
 def get_ai_coach_answer(payload: dict) -> str:
-    client = create_openai_client()
-    response = client.responses.create(
+    client = create_gemini_client()
+    response = client.models.generate_content(
         model=DEFAULT_MODEL,
-        input=[
-            {"role": "system", "content": build_system_prompt(payload)},
-            {"role": "user", "content": build_user_prompt(payload)},
-        ],
-        max_output_tokens=180,
+        contents=build_user_prompt(payload),
+        config=types.GenerateContentConfig(
+            system_instruction=build_system_prompt(payload),
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+        ),
     )
 
-    answer = (response.output_text or "").strip()
+    answer = (response.text or "").strip()
 
     if not answer:
         raise RuntimeError("The model returned an empty answer.")
@@ -132,22 +127,6 @@ def ask_coach():
 
     try:
         answer = get_ai_coach_answer(payload)
-    except openai.AuthenticationError as error:
-        print(f"[/ask_coach] {type(error).__name__}: {repr(error)}")
-        traceback.print_exc()
-        return jsonify({"error": str(error), "error_type": type(error).__name__}), 401
-    except openai.PermissionDeniedError as error:
-        print(f"[/ask_coach] {type(error).__name__}: {repr(error)}")
-        traceback.print_exc()
-        return jsonify({"error": str(error), "error_type": type(error).__name__}), 403
-    except openai.RateLimitError as error:
-        print(f"[/ask_coach] {type(error).__name__}: {repr(error)}")
-        traceback.print_exc()
-        return jsonify({"error": str(error), "error_type": type(error).__name__}), 429
-    except openai.BadRequestError as error:
-        print(f"[/ask_coach] {type(error).__name__}: {repr(error)}")
-        traceback.print_exc()
-        return jsonify({"error": str(error), "error_type": type(error).__name__}), 400
     except RuntimeError as error:
         print(f"[/ask_coach] RuntimeError: {error}")
         traceback.print_exc()
@@ -179,6 +158,6 @@ def serve_page(page_name: str):
 if __name__ == "__main__":
     print(
         f"[startup] EASY FIT backend starting | model={DEFAULT_MODEL} | "
-        f"openai_key_present={'yes' if bool(os.getenv('OPENAI_API_KEY')) else 'no'}"
+        f"gemini_key_present={'yes' if bool(os.getenv('GEMINI_API_KEY')) else 'no'}"
     )
     app.run(debug=False)
