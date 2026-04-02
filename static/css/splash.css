@@ -14,6 +14,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 0 24px;
 }
 
 @media (max-width: 420px) {
@@ -23,7 +24,6 @@
   }
 }
 
-/* Status bar */
 .status-bar {
   display: flex;
   width: 100%;
@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 1.5px 0px 0px;
+  padding: 1.5px 0 0;
   position: relative;
   flex: 0 0 auto;
 }
@@ -68,12 +68,11 @@
   object-fit: contain;
 }
 
-/* Logo */
 .logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 120px;
+  margin-bottom: 132px;
 }
 
 .logo-text {
@@ -82,28 +81,13 @@
   color: #289cff;
   font-size: 64px;
   text-align: center;
-  letter-spacing: 0;
-  line-height: normal;
+  letter-spacing: 1px;
+  line-height: 0.95;
 }
 
-.logo-heart {
-  position: relative;
-  display: inline-block;
-}
-
-.logo-heart::after {
-  content: "❤";
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.42);
-  color: #ff7aa5;
-}
-
-/* Start button */
 .start-button {
   position: absolute;
-  bottom: 160px;
+  bottom: 150px;
   left: 50%;
   transform: translateX(-50%);
 }

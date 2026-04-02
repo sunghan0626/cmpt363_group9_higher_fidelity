@@ -64,13 +64,13 @@
 
       .nav-layer {
         position: relative;
-        min-height: 52px;
+        min-height: 66px;
       }
 
       .back-btn,
       .close-btn {
         position: absolute;
-        top: 0;
+        top: -2px;
         width: 44px;
         height: 44px;
         border: none;
@@ -82,7 +82,7 @@
       }
 
       .back-btn {
-        left: -4px;
+        left: 2px;
       }
 
       .back-btn span {
@@ -92,7 +92,7 @@
       }
 
       .close-btn {
-        right: -2px;
+        right: 2px;
       }
 
       .close-btn span {
@@ -124,7 +124,7 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        margin-top: 10px;
+        margin-top: 26px;
       }
 
       .exercise-card {
@@ -263,7 +263,7 @@
 
       .below-card {
         width: 100%;
-        margin-top: 54px;
+        margin-top: 42px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -518,7 +518,7 @@
         );
 
         document.getElementById("exercise-art").src =
-          getExerciseImageSrc(currentExercise.name);
+          getExerciseImageSrc(currentExercise);
         document.getElementById("exercise-art").alt =
           `${currentExercise.name} demonstration`;
         document.getElementById("exercise-name").textContent = currentExercise.name;

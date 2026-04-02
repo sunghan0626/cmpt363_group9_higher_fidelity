@@ -2,6 +2,9 @@ const EASYFIT_GOALS_KEY = "easyfit.selectedGoals";
 const EASYFIT_WORKOUT_SETUP_KEY = "easyfit.workoutSetup";
 const EASYFIT_GENERATED_WORKOUT_KEY = "easyfit.generatedWorkoutPlan";
 const EASYFIT_GENERATED_WORKOUT_VERSION = 4;
+const EASYFIT_MACHINE_UPDATE_PENDING_KEY = "easyfit.machineUpdatePending";
+const EASYFIT_MACHINE_IMAGE_KEY = "easyfit.machineImageDataUrl";
+
 const LEGACY_GOALS_KEY = "easfit.selectedGoals";
 const LEGACY_WORKOUT_SETUP_KEY = "easfit.workoutSetup";
 const LEGACY_GENERATED_WORKOUT_KEY = "easfit.generatedWorkoutPlan";
@@ -417,7 +420,90 @@ function getExerciseFocusText(exerciseName) {
     : "full-body control";
 }
 
-function getExerciseImageSrc(exerciseName) {
+function saveMachineImageDataUrl(dataUrl) {
+  localStorage.setItem(EASYFIT_MACHINE_IMAGE_KEY, dataUrl);
+}
+
+function loadMachineImageDataUrl() {
+  return localStorage.getItem(EASYFIT_MACHINE_IMAGE_KEY) || "";
+}
+
+function clearMachineImageDataUrl() {
+  localStorage.removeItem(EASYFIT_MACHINE_IMAGE_KEY);
+}
+
+function markMachineUpdatePending() {
+  localStorage.setItem(EASYFIT_MACHINE_UPDATE_PENDING_KEY, "1");
+}
+
+function consumeMachineUpdatePending() {
+  const value = localStorage.getItem(EASYFIT_MACHINE_UPDATE_PENDING_KEY);
+  localStorage.removeItem(EASYFIT_MACHINE_UPDATE_PENDING_KEY);
+  return value === "1";
+}
+
+function addMachineExerciseToPlan(machineExercise, imageDataUrl) {
+  const plan = getOrCreateGeneratedWorkoutPlan();
+
+  const normalizedExercise = {
+    name: machineExercise.name || "Machine Exercise",
+    prescription: machineExercise.prescription || "3 sets x 10 reps",
+    instructions: Array.isArray(machineExercise.instructions)
+      ? machineExercise.instructions.slice(0, 4)
+      : [
+          "Adjust the machine to a comfortable setup.",
+          "Move with control through the range that feels safe.",
+          "Keep your posture steady.",
+          "Reduce the load if the movement feels too difficult."
+        ],
+    durationMinutes: Number(machineExercise.durationMinutes) || 5,
+    customImageDataUrl: imageDataUrl || ""
+  };
+
+  const alreadyExists = plan.exercises.some(
+    (exercise) => exercise.name === normalizedExercise.name
+  );
+
+  if (!alreadyExists) {
+    if (plan.exercises.length >= 5) {
+      plan.exercises[plan.exercises.length - 1] = normalizedExercise;
+    } else {
+      plan.exercises.push(normalizedExercise);
+    }
+  }
+
+  plan.summary =
+    `${plan.summary} Includes ${normalizedExercise.name.toLowerCase()} for machine-based training.`;
+
+  plan.estimatedSessionMinutes = plan.exercises.reduce(
+    (total, exercise) => total + (Number(exercise.durationMinutes) || 0),
+    0
+  );
+
+  plan.estimatedTotalMinutes = plan.estimatedSessionMinutes * plan.daysPerWeek;
+  plan.session = createSessionState();
+
+  saveGeneratedWorkoutPlan(plan);
+  saveMachineImageDataUrl(imageDataUrl || "");
+  return plan;
+}
+
+function getExerciseImageSrc(exerciseOrName) {
+  if (
+    exerciseOrName &&
+    typeof exerciseOrName === "object" &&
+    exerciseOrName.customImageDataUrl
+  ) {
+    return exerciseOrName.customImageDataUrl;
+  }
+
+  const exerciseName =
+    typeof exerciseOrName === "string"
+      ? exerciseOrName
+      : exerciseOrName && exerciseOrName.name
+        ? exerciseOrName.name
+        : "";
+
   if (DEMO_EXERCISES[exerciseName]) {
     return `/static/images/${DEMO_EXERCISES[exerciseName].image}`;
   }

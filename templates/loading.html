@@ -85,7 +85,7 @@
 
       .title {
         margin: 0;
-        max-width: 220px;
+        max-width: 240px;
         font-family: var(--m3-title-small-emphasized-font-family);
         font-weight: 600;
         font-size: 24px;
@@ -95,7 +95,7 @@
 
       .description {
         margin: 0;
-        max-width: 260px;
+        max-width: 270px;
         font-family: var(--m3-body-medium-font-family);
         font-size: 14px;
         line-height: 20px;
@@ -166,6 +166,16 @@
     <script>
       const summaryText = document.getElementById("summary-text");
       const generatedPlan = getOrCreateGeneratedWorkoutPlan();
+      const titleEl = document.querySelector(".title");
+      const descriptionEl = document.querySelector(".description");
+
+      const isMachineUpdate = consumeMachineUpdatePending();
+
+      if (isMachineUpdate) {
+        titleEl.textContent = "Updating your personalized workout session...";
+        descriptionEl.textContent =
+          "We are adding your selected machine into the prototype workout plan.";
+      }
 
       summaryText.textContent =
         `${generatedPlan.title} | ${generatedPlan.totalWorkouts} workouts | ` +

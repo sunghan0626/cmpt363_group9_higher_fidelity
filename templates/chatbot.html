@@ -64,13 +64,14 @@
 
       .top-row {
         position: relative;
-        min-height: 46px;
+        min-height: 60px;
+        margin-top: 2px;
       }
 
       .back-btn {
         position: absolute;
-        left: -2px;
-        top: 0;
+        left: 2px;
+        top: -2px;
         width: 42px;
         height: 42px;
         border: none;
@@ -82,8 +83,8 @@
 
       .camera-btn {
         position: absolute;
-        right: 0;
-        top: 2px;
+        right: 2px;
+        top: -2px;
         width: 44px;
         height: 44px;
         border-radius: 12px;
@@ -105,7 +106,8 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        padding: 26px 6px 0;
+        padding: 20px 6px 0;
+        overflow-y: auto;
       }
 
       .thumbnail-row {
@@ -138,6 +140,7 @@
         font-weight: 500;
         color: #5a6773;
         background: #abd7ff;
+        word-break: break-word;
       }
 
       .bubble--user {
@@ -152,6 +155,23 @@
         border-top-left-radius: 12px;
         max-width: 248px;
         text-align: center;
+      }
+
+      .bubble--image {
+        align-self: flex-end;
+        margin-top: 12px;
+        border-top-right-radius: 12px;
+        padding: 8px;
+        background: #abd7ff;
+      }
+
+      .bubble--image img {
+        display: block;
+        width: 150px;
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        object-fit: cover;
       }
 
       .input-wrap {
@@ -299,7 +319,12 @@
           &larr;
         </button>
 
-        <button class="camera-btn" type="button" aria-label="Exercise image">
+        <button
+          class="camera-btn"
+          type="button"
+          aria-label="Scan gym machine"
+          onclick="document.getElementById('machine-image-input').click()"
+        >
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M8 6L9.6 4.5H14.4L16 6H19C20.1 6 21 6.9 21 8V17C21 18.1 20.1 19 19 19H5C3.9 19 3 18.1 3 17V8C3 6.9 3.9 6 5 6H8Z"
@@ -310,6 +335,14 @@
             <circle cx="12" cy="12.5" r="3.5" stroke="currentColor" stroke-width="2" />
           </svg>
         </button>
+
+        <input
+          id="machine-image-input"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+        />
       </div>
 
       <div class="chat-body" id="chat-body">
@@ -394,17 +427,18 @@
         plan.exercises[plan.session && !plan.session.isCompleted
           ? plan.session.currentExerciseIndex
           : 0];
+
       const chatBody = document.getElementById("chat-body");
       const chatInput = document.getElementById("chat-input");
+      const machineImageInput = document.getElementById("machine-image-input");
+
+      let machineImageDataUrl = "";
+      let pendingMachineExercise = null;
 
       document.getElementById("exercise-thumb").innerHTML =
-        `<img src="${getExerciseImageSrc(exercise.name)}" alt="${exercise.name} reference" />`;
+        `<img src="${getExerciseImageSrc(exercise)}" alt="${exercise.name} reference" />`;
 
-      appendBubble(
-        "user",
-        "What is this exercise called? What does it do?"
-      );
-
+      appendBubble("user", "What is this exercise called? What does it do?");
       requestCoachReply("What is this exercise called? What does it do?");
 
       chatInput.addEventListener("keydown", (event) => {
@@ -413,12 +447,61 @@
         }
       });
 
+      machineImageInput.addEventListener("change", async (event) => {
+        const file = event.target.files && event.target.files[0];
+
+        if (!file) {
+          return;
+        }
+
+        machineImageDataUrl = await fileToDataUrl(file);
+        saveMachineImageDataUrl(machineImageDataUrl);
+        pendingMachineExercise = null;
+
+        appendImageBubble(machineImageDataUrl, "Uploaded gym machine photo");
+        appendBubble("assistant", "Image uploaded. Ask me anything about this machine.");
+      });
+
       function appendBubble(role, text) {
         const bubble = document.createElement("div");
         bubble.className = `bubble bubble--${role}`;
         bubble.textContent = text;
         chatBody.appendChild(bubble);
         bubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+
+      function appendImageBubble(src, altText) {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble bubble--image";
+
+        const image = document.createElement("img");
+        image.src = src;
+        image.alt = altText || "Uploaded image";
+
+        bubble.appendChild(image);
+        chatBody.appendChild(bubble);
+        bubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+
+      function fileToDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function isYes(text) {
+        return ["yes", "y", "yeah", "yep", "sure", "ok", "okay"].includes(
+          String(text || "").trim().toLowerCase()
+        );
+      }
+
+      function isNo(text) {
+        return ["no", "n", "nope", "nah"].includes(
+          String(text || "").trim().toLowerCase()
+        );
       }
 
       async function fetchCoachAnswer(question) {
@@ -432,35 +515,88 @@
           userQuestion: question
         };
 
-        try {
-          const response = await fetch("/ask_coach", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-          });
+        const response = await fetch("/ask_coach", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
 
-          if (!response.ok) {
-            throw new Error(`Coach backend returned ${response.status}`);
-          }
-
-          const data = await response.json();
-
-          if (!data || typeof data.answer !== "string" || !data.answer.trim()) {
-            throw new Error("Coach backend returned an empty answer.");
-          }
-
-          return data.answer.trim();
-        } catch (error) {
-          console.warn("Falling back to local coach response.", error);
-          return getChatbotResponse(plan, exercise, question);
+        if (!response.ok) {
+          throw new Error(`Coach backend returned ${response.status}`);
         }
+
+        const data = await response.json();
+
+        if (!data || typeof data.answer !== "string" || !data.answer.trim()) {
+          throw new Error("Coach backend returned an empty answer.");
+        }
+
+        return data.answer.trim();
+      }
+
+      async function fetchMachineAnswer(question) {
+        if (!machineImageDataUrl) {
+          throw new Error("No machine image selected.");
+        }
+
+        const payload = {
+          imageDataUrl: machineImageDataUrl,
+          selectedGoals: plan.goals || [],
+          intensity: plan.intensity || "",
+          beginner: plan.beginner || "",
+          userQuestion: question
+        };
+
+        const response = await fetch("/ask_machine", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Machine backend returned ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data || typeof data.answer !== "string" || !data.answer.trim()) {
+          throw new Error("Machine backend returned an empty answer.");
+        }
+
+        pendingMachineExercise = data.suggested_exercise || null;
+        return data.answer.trim();
       }
 
       async function requestCoachReply(question) {
-        const answer = await fetchCoachAnswer(question);
-        appendBubble("assistant", answer);
+        try {
+          const answer = await fetchCoachAnswer(question);
+          appendBubble("assistant", answer);
+        } catch (error) {
+          console.warn("Falling back to local coach response.", error);
+          appendBubble("assistant", getChatbotResponse(plan, exercise, question));
+        }
+      }
+
+      async function requestMachineReply(question) {
+        try {
+          const answer = await fetchMachineAnswer(question);
+          appendBubble("assistant", answer);
+
+          if (pendingMachineExercise) {
+            appendBubble("assistant", "Add to workout plan?");
+          }
+        } catch (error) {
+          console.warn("Machine route failed.", error);
+          appendBubble(
+            "assistant",
+            "I could not inspect that machine image right now. Check that your Gemini key is set and try another photo."
+          );
+        }
       }
 
       function handleSend() {
@@ -472,6 +608,28 @@
 
         appendBubble("user", question);
         chatInput.value = "";
+
+        if (machineImageDataUrl && pendingMachineExercise && isYes(question)) {
+          addMachineExerciseToPlan(pendingMachineExercise, machineImageDataUrl);
+          markMachineUpdatePending();
+          appendBubble("assistant", "Updating your personalized workout session...");
+          window.setTimeout(() => {
+            window.location.href = "loading.html";
+          }, 900);
+          return;
+        }
+
+        if (machineImageDataUrl && pendingMachineExercise && isNo(question)) {
+          pendingMachineExercise = null;
+          appendBubble("assistant", "Okay — I will keep your current plan as it is.");
+          return;
+        }
+
+        if (machineImageDataUrl) {
+          requestMachineReply(question);
+          return;
+        }
+
         requestCoachReply(question);
       }
     </script>
