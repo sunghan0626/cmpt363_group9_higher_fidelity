@@ -20,7 +20,6 @@
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        padding: 0 22px 18px;
       }
 
       @media (max-width: 420px) {
@@ -36,7 +35,8 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        padding: 21px 2px 10px;
+        padding: 21px 24px 16px;
+        flex-shrink: 0;
       }
 
       .time {
@@ -51,6 +51,7 @@
         font-family: "SF Pro-Semibold", Helvetica;
         font-size: 17px;
         line-height: 22px;
+        color: #000000;
       }
 
       .levels {
@@ -59,105 +60,230 @@
         object-fit: contain;
       }
 
-      .topbar {
-        display: grid;
-        grid-template-columns: 44px 1fr auto;
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .top-row {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 8px;
+        justify-content: flex-start;
+        padding: 0 22px 8px;
       }
 
-      .icon-btn {
-        width: 44px;
-        height: 44px;
-        border: none;
-        background: transparent;
-        color: #289cff;
-        font-size: 28px;
-        cursor: pointer;
-      }
 
-      .title {
+      .session-strip {
+        margin-top: 2px;
+        background: #f1f1f1;
         text-align: center;
-        font-family: "Protest Riot", Helvetica;
-        color: #289cff;
-        font-size: 34px;
-        font-weight:800;
-        line-height: 1;
-        margin: 0;
       }
 
-      .start-workout-btn {
-        min-height: 38px;
-        padding: 0 14px;
+      .session-label {
+        margin: 0;
+        padding-top: 2px;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        font-weight: 600;
+        color: #8f8f8f;
+      }
+
+      .session-time {
+        margin-top: 4px;
+        background: #289cff;
+        color: #ffffff;
+        font-family: "Poppins", Helvetica;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 32px;
+      }
+
+      .preview-area {
+        background: #efefef;
+        padding: 16px 10px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      .exercise-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        overflow: hidden;
+      }
+
+      .exercise-thumb {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+      }
+
+      .exercise-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .start-btn {
+        margin-top: 10px;
+        min-width: 120px;
+        min-height: 34px;
+        padding: 0 22px;
         border: none;
         border-radius: 18px;
         background: #289cff;
         color: #ffffff;
         font-family: "Poppins", Helvetica;
-        font-size: 13px;
-        font-weight:600;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-
-      .greeting {
-        margin: 14px 0 22px;
-        text-align: center;
-        font-family: "Poppins", Helvetica;
-        font-size: 14px;
-        line-height: 20px;
-        color: #289cff;
+        font-size: 17px;
         font-weight: 600;
+        cursor: pointer;
       }
 
-      .cards {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+      .timeline-title {
+        margin: 18px 0 14px;
+        text-align: center;
+        font-family: "Protest Riot", Helvetica;
+        color: #289cff;
+        font-size: 30px;
+        font-weight: bold;
+        line-height: 1;
       }
 
-      .card {
-        background: #f3f3f3;
+      .calendar-card {
+        width: calc(100% - 52px);
+        max-width: 320px;
+        margin: 0 auto;
+        padding: 18px 16px 16px;
+        background: #ffffff;
         border-radius: 18px;
-        padding: 14px 16px 16px;
-        box-shadow: inset 0 0 0 2px rgba(120, 120, 120, 0.75);
+        box-shadow: inset 0 0 0 1px rgba(198, 198, 198, 0.95);
       }
 
-      .card-top {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
+      .calendar-top {
+        display: grid;
+        grid-template-columns: 32px 1fr 1fr 32px;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
       }
 
-      .card-title {
-        margin: 0;
-        font-family: "Poppins", Helvetica;
-        font-size: 18px;
-        font-weight: 700;
-        color: #5b5b5b;
-      }
-
-      .card-icon {
+      .calendar-arrow {
         width: 32px;
         height: 32px;
-        color: #5b5b5b;
+        border: none;
+        background: transparent;
+        color: #303030;
+        font-size: 28px;
+        line-height: 1;
+        cursor: pointer;
       }
 
-      .card-value {
-        margin: 26px 0 0;
-        font-family: "Protest Riot", Helvetica;
-        font-size: 18px;
-        color: #289cff;
+      .calendar-select-wrap {
+        position: relative;
+        min-height: 34px;
+      }
+
+      .calendar-select {
+        width: 100%;
+        min-height: 34px;
+        border-radius: 10px;
+        background: #f5f5f5;
+        box-shadow: inset 0 0 0 1px rgba(210, 210, 210, 0.95);
+        border: none;
+        padding: 0 28px 0 12px;
+        font-family: "Poppins", Helvetica;
+        font-size: 15px;
+        color: #4d4d4d;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        outline: none;
+        cursor: pointer;
+      }
+
+      .calendar-select-arrow {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        color: #4d4d4d;
+        pointer-events: none;
+      }
+
+      .weekdays,
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+      }
+
+      .weekdays {
+        margin-bottom: 8px;
+      }
+
+      .weekday {
+        text-align: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        color: #9d9d9d;
+      }
+
+      .day {
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        color: #333333;
+        cursor: pointer;
+        user-select: none;
+        border: 1px solid #d8d8d8;
+        background: #ffffff;
+      }
+
+      .day--muted {
+        color: #bebebe;
+        border-color: transparent;
+        background: transparent;
+      }
+
+      .day--completed {
+        background: #c0ddf7;
+        border-color: #d8d8d8;
+      }
+
+      .day--today {
+        background: #289cff;
+        color: #ffffff;
+        border-color: #289cff;
+      }
+
+      .day--selected {
+        box-shadow: inset 0 0 0 2px #289cff;
+      }
+
+      .bottom-spacer {
+        flex: 1;
+        min-height: 18px;
       }
 
       .navbar {
-        margin-top: auto;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         background: #a8d2f8;
-        border-radius: 0 0 18px 18px;
         overflow: hidden;
       }
 
@@ -200,104 +326,264 @@
         />
       </div>
 
-      <div class="topbar">
-        <button class="icon-btn" type="button" aria-label="Menu">☰</button>
-        <h1 class="title">Dashboard</h1>
-        <button
-          class="start-workout-btn"
-          type="button"
-          onclick="window.location.href='workout.html';"
-        >
-          START
-        </button>
-      </div>
 
-      <p class="greeting" id="greeting-text">Hi! Today is workout day. Let's get started!</p>
+        <div class="session-strip">
+          <p class="session-label">Today's session</p>
+          <div class="session-time" id="session-time">25 minutes</div>
+        </div>
 
-      <div class="cards">
-        <section class="card">
-          <div class="card-top">
-            <h2 class="card-title">Workouts</h2>
-            <div class="card-icon">🏋️</div>
+        <div class="preview-area">
+          <div class="exercise-row" id="exercise-row"></div>
+          <button class="start-btn" type="button" onclick="window.location.href='workout.html';">
+            Start
+          </button>
+        </div>
+
+        <h1 class="timeline-title">Timeline</h1>
+
+        <section class="calendar-card">
+          <div class="calendar-top">
+            <button class="calendar-arrow" id="prev-month-btn" type="button" aria-label="Previous month">‹</button>
+
+            <div class="calendar-select-wrap">
+              <select class="calendar-select" id="month-select" aria-label="Select month"></select>
+              <span class="calendar-select-arrow">⌄</span>
+            </div>
+
+            <div class="calendar-select-wrap">
+              <select class="calendar-select" id="year-select" aria-label="Select year"></select>
+              <span class="calendar-select-arrow">⌄</span>
+            </div>
+
+            <button class="calendar-arrow" id="next-month-btn" type="button" aria-label="Next month">›</button>
           </div>
-          <p class="card-value" id="workouts-value">5 workouts</p>
+
+          <div class="weekdays">
+            <div class="weekday">Su</div>
+            <div class="weekday">Mo</div>
+            <div class="weekday">Tu</div>
+            <div class="weekday">We</div>
+            <div class="weekday">Th</div>
+            <div class="weekday">Fr</div>
+            <div class="weekday">Sa</div>
+          </div>
+
+          <div class="calendar-grid" id="calendar-grid"></div>
         </section>
 
-        <section class="card">
-          <div class="card-top">
-            <h2 class="card-title">Total Time</h2>
-            <div class="card-icon">⏱</div>
-          </div>
-          <p class="card-value" id="time-value">180 mins.</p>
-        </section>
+        <div class="bottom-spacer"></div>
 
-        <section class="card">
-          <div class="card-top">
-            <h2 class="card-title">Calories</h2>
-            <div class="card-icon">🔥</div>
-          </div>
-          <p class="card-value" id="calories-value">910 burned</p>
-        </section>
-
-        <section class="card">
-          <div class="card-top">
-            <h2 class="card-title">Streak</h2>
-            <div class="card-icon">🏆</div>
-          </div>
-          <p class="card-value" id="streak-value">4 days</p>
-        </section>
-      </div>
-
-      <div class="navbar">
-        <button class="nav-item nav-item--active" type="button" onclick="window.location.href='dashboard.html';">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="8"></circle>
-            <path d="M12 8v4l3 2"></path>
-          </svg>
-        </button>
-        <button class="nav-item" type="button" onclick="window.location.href='exercises.html';">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="6"></circle>
-            <path d="M20 20l-4-4"></path>
-          </svg>
-        </button>
-        <button class="nav-item" type="button" aria-label="Food page coming soon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 3v7"></path>
-            <path d="M10 3v7"></path>
-            <path d="M7 7h3"></path>
-            <path d="M10 21V10"></path>
-            <path d="M17 3c1.5 2 1.5 5 0 7"></path>
-            <path d="M17 21V10"></path>
-          </svg>
-        </button>
-        <button class="nav-item" type="button" aria-label="Stats page coming soon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 20h16"></path>
-            <path d="M7 16v-4"></path>
-            <path d="M12 16V8"></path>
-            <path d="M17 16v-6"></path>
-          </svg>
-        </button>
+        <div class="navbar">
+          <button class="nav-item nav-item--active" type="button" onclick="window.location.href='dashboard.html';">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="8"></circle>
+              <path d="M12 8v4l3 2"></path>
+            </svg>
+          </button>
+          <button class="nav-item" type="button" onclick="window.location.href='exercises.html';">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="6"></circle>
+              <path d="M20 20l-4-4"></path>
+            </svg>
+          </button>
+          <button class="nav-item" type="button" aria-label="Food page coming soon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 3v7"></path>
+              <path d="M10 3v7"></path>
+              <path d="M7 7h3"></path>
+              <path d="M10 21V10"></path>
+              <path d="M17 3c1.5 2 1.5 5 0 7"></path>
+              <path d="M17 21V10"></path>
+            </svg>
+          </button>
+          <button class="nav-item" type="button" aria-label="Stats page coming soon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 20h16"></path>
+              <path d="M7 16v-4"></path>
+              <path d="M12 16V8"></path>
+              <path d="M17 16v-6"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
     <script>
       const plan = getOrCreateGeneratedWorkoutPlan();
+      const sessionTime = document.getElementById("session-time");
+      const exerciseRow = document.getElementById("exercise-row");
+      const calendarGrid = document.getElementById("calendar-grid");
+      const monthSelect = document.getElementById("month-select");
+      const yearSelect = document.getElementById("year-select");
+      const prevMonthBtn = document.getElementById("prev-month-btn");
+      const nextMonthBtn = document.getElementById("next-month-btn");
 
-      document.getElementById("greeting-text").textContent =
-        `Hi! Today is ${plan.goals[0] ? plan.goals[0].toLowerCase() : "fitness"} day. Let's get started!`;
+      const monthNames = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
 
-      document.getElementById("workouts-value").textContent =
-        `${plan.totalWorkouts} x ${plan.estimatedSessionMinutes} mins`;
+      const today = new Date();
+      let viewYear = today.getFullYear();
+      let viewMonth = today.getMonth();
+      let selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-      document.getElementById("time-value").textContent =
-        `${plan.estimatedTotalMinutes} mins.`;
+      sessionTime.textContent = `${plan.estimatedSessionMinutes} minutes`;
 
-      document.getElementById("calories-value").textContent =
-        `${Math.max(300, plan.estimatedTotalMinutes * 5)} burned`;
+      plan.exercises.slice(0, 5).forEach((exercise) => {
+        const wrapper = document.createElement("div");
+        const image = document.createElement("img");
 
-      document.getElementById("streak-value").textContent = "4 days";
+        wrapper.className = "exercise-thumb";
+        image.src = getExerciseImageSrc(exercise);
+        image.alt = exercise.name;
+
+        wrapper.appendChild(image);
+        exerciseRow.appendChild(wrapper);
+      });
+
+      function populateMonthOptions() {
+        monthSelect.innerHTML = "";
+        monthNames.forEach((monthName, index) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = monthName;
+          monthSelect.appendChild(option);
+        });
+      }
+
+      function populateYearOptions() {
+        yearSelect.innerHTML = "";
+        const startYear = today.getFullYear() - 5;
+        const endYear = today.getFullYear() + 5;
+
+        for (let year = startYear; year <= endYear; year += 1) {
+          const option = document.createElement("option");
+          option.value = String(year);
+          option.textContent = String(year);
+          yearSelect.appendChild(option);
+        }
+      }
+
+      function getCompletedDatesForMonth(year, month) {
+        const result = [];
+        const spacing = Math.max(2, Math.floor(30 / Math.max(1, plan.totalWorkouts)));
+        let day = 2;
+
+        while (day <= 28) {
+          result.push(new Date(year, month, day));
+          day += spacing;
+        }
+
+        return result;
+      }
+
+      function isSameDate(a, b) {
+        return (
+          a.getFullYear() === b.getFullYear() &&
+          a.getMonth() === b.getMonth() &&
+          a.getDate() === b.getDate()
+        );
+      }
+
+      function syncDropdowns() {
+        monthSelect.value = String(viewMonth);
+        yearSelect.value = String(viewYear);
+      }
+
+      function renderCalendar() {
+        calendarGrid.innerHTML = "";
+        syncDropdowns();
+
+        const firstDayOfMonth = new Date(viewYear, viewMonth, 1);
+        const lastDayOfMonth = new Date(viewYear, viewMonth + 1, 0);
+        const daysInMonth = lastDayOfMonth.getDate();
+        const startWeekday = firstDayOfMonth.getDay();
+
+        const prevMonthLastDay = new Date(viewYear, viewMonth, 0).getDate();
+        const completedDates = getCompletedDatesForMonth(viewYear, viewMonth);
+
+        for (let i = 0; i < startWeekday; i += 1) {
+          const dayEl = document.createElement("div");
+          dayEl.className = "day day--muted";
+          dayEl.textContent = String(prevMonthLastDay - startWeekday + i + 1);
+          calendarGrid.appendChild(dayEl);
+        }
+
+        for (let day = 1; day <= daysInMonth; day += 1) {
+          const currentDate = new Date(viewYear, viewMonth, day);
+          const dayEl = document.createElement("button");
+
+          dayEl.type = "button";
+          dayEl.className = "day";
+          dayEl.textContent = String(day);
+
+          if (completedDates.some((date) => isSameDate(date, currentDate))) {
+            dayEl.classList.add("day--completed");
+          }
+
+          if (isSameDate(currentDate, today)) {
+            dayEl.classList.add("day--today");
+          }
+
+          if (isSameDate(currentDate, selectedDate) && !isSameDate(currentDate, today)) {
+            dayEl.classList.add("day--selected");
+          }
+
+          dayEl.addEventListener("click", () => {
+            selectedDate = currentDate;
+            renderCalendar();
+          });
+
+          calendarGrid.appendChild(dayEl);
+        }
+
+        const totalCellsUsed = startWeekday + daysInMonth;
+        const trailingCells = totalCellsUsed % 7 === 0 ? 0 : 7 - (totalCellsUsed % 7);
+
+        for (let i = 1; i <= trailingCells; i += 1) {
+          const dayEl = document.createElement("div");
+          dayEl.className = "day day--muted";
+          dayEl.textContent = String(i);
+          calendarGrid.appendChild(dayEl);
+        }
+      }
+
+      prevMonthBtn.addEventListener("click", () => {
+        viewMonth -= 1;
+
+        if (viewMonth < 0) {
+          viewMonth = 11;
+          viewYear -= 1;
+        }
+
+        renderCalendar();
+      });
+
+      nextMonthBtn.addEventListener("click", () => {
+        viewMonth += 1;
+
+        if (viewMonth > 11) {
+          viewMonth = 0;
+          viewYear += 1;
+        }
+
+        renderCalendar();
+      });
+
+      monthSelect.addEventListener("change", (event) => {
+        viewMonth = Number(event.target.value);
+        renderCalendar();
+      });
+
+      yearSelect.addEventListener("change", (event) => {
+        viewYear = Number(event.target.value);
+        renderCalendar();
+      });
+
+      populateMonthOptions();
+      populateYearOptions();
+      renderCalendar();
     </script>
   </body>
 </html>
