@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Dashboard</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 22px 18px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 2px 10px;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .icon-btn {
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: transparent;
+        color: #289cff;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .title {
+        text-align: center;
+        font-family: "Protest Riot", Helvetica;
+        color: #289cff;
+        font-size: 34px;
+        font-weight:800;
+        line-height: 1;
+        margin: 0;
+      }
+
+      .start-workout-btn {
+        min-height: 38px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 18px;
+        background: #289cff;
+        color: #ffffff;
+        font-family: "Poppins", Helvetica;
+        font-size: 13px;
+        font-weight:600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .greeting {
+        margin: 14px 0 22px;
+        text-align: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+        line-height: 20px;
+        color: #289cff;
+        font-weight: 600;
+      }
+
+      .cards {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .card {
+        background: #f3f3f3;
+        border-radius: 18px;
+        padding: 14px 16px 16px;
+        box-shadow: inset 0 0 0 2px rgba(120, 120, 120, 0.75);
+      }
+
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .card-title {
+        margin: 0;
+        font-family: "Poppins", Helvetica;
+        font-size: 18px;
+        font-weight: 700;
+        color: #5b5b5b;
+      }
+
+      .card-icon {
+        width: 32px;
+        height: 32px;
+        color: #5b5b5b;
+      }
+
+      .card-value {
+        margin: 26px 0 0;
+        font-family: "Protest Riot", Helvetica;
+        font-size: 18px;
+        color: #289cff;
+      }
+
+      .navbar {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: #a8d2f8;
+        border-radius: 0 0 18px 18px;
+        overflow: hidden;
+      }
+
+      .nav-item {
+        min-height: 56px;
+        border: none;
+        background: transparent;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .nav-item--active {
+        background: #289cff;
+      }
+
+      .nav-item svg {
+        width: 28px;
+        height: 28px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="topbar">
+        <button class="icon-btn" type="button" aria-label="Menu">☰</button>
+        <h1 class="title">Dashboard</h1>
+        <button
+          class="start-workout-btn"
+          type="button"
+          onclick="window.location.href='workout.html';"
+        >
+          START
+        </button>
+      </div>
+
+      <p class="greeting" id="greeting-text">Hi! Today is workout day. Let's get started!</p>
+
+      <div class="cards">
+        <section class="card">
+          <div class="card-top">
+            <h2 class="card-title">Workouts</h2>
+            <div class="card-icon">🏋️</div>
+          </div>
+          <p class="card-value" id="workouts-value">5 workouts</p>
+        </section>
+
+        <section class="card">
+          <div class="card-top">
+            <h2 class="card-title">Total Time</h2>
+            <div class="card-icon">⏱</div>
+          </div>
+          <p class="card-value" id="time-value">180 mins.</p>
+        </section>
+
+        <section class="card">
+          <div class="card-top">
+            <h2 class="card-title">Calories</h2>
+            <div class="card-icon">🔥</div>
+          </div>
+          <p class="card-value" id="calories-value">910 burned</p>
+        </section>
+
+        <section class="card">
+          <div class="card-top">
+            <h2 class="card-title">Streak</h2>
+            <div class="card-icon">🏆</div>
+          </div>
+          <p class="card-value" id="streak-value">4 days</p>
+        </section>
+      </div>
+
+      <div class="navbar">
+        <button class="nav-item nav-item--active" type="button" onclick="window.location.href='dashboard.html';">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="8"></circle>
+            <path d="M12 8v4l3 2"></path>
+          </svg>
+        </button>
+        <button class="nav-item" type="button" onclick="window.location.href='exercises.html';">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6"></circle>
+            <path d="M20 20l-4-4"></path>
+          </svg>
+        </button>
+        <button class="nav-item" type="button" aria-label="Food page coming soon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 3v7"></path>
+            <path d="M10 3v7"></path>
+            <path d="M7 7h3"></path>
+            <path d="M10 21V10"></path>
+            <path d="M17 3c1.5 2 1.5 5 0 7"></path>
+            <path d="M17 21V10"></path>
+          </svg>
+        </button>
+        <button class="nav-item" type="button" aria-label="Stats page coming soon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20h16"></path>
+            <path d="M7 16v-4"></path>
+            <path d="M12 16V8"></path>
+            <path d="M17 16v-6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const plan = getOrCreateGeneratedWorkoutPlan();
+
+      document.getElementById("greeting-text").textContent =
+        `Hi! Today is ${plan.goals[0] ? plan.goals[0].toLowerCase() : "fitness"} day. Let's get started!`;
+
+      document.getElementById("workouts-value").textContent =
+        `${plan.totalWorkouts} x ${plan.estimatedSessionMinutes} mins`;
+
+      document.getElementById("time-value").textContent =
+        `${plan.estimatedTotalMinutes} mins.`;
+
+      document.getElementById("calories-value").textContent =
+        `${Math.max(300, plan.estimatedTotalMinutes * 5)} burned`;
+
+      document.getElementById("streak-value").textContent = "4 days";
+    </script>
+  </body>
+</html>

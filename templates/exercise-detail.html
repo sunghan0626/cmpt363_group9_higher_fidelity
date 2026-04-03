@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Exercise Details</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        position: relative;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 24px 24px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 2px 10px;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .top-row {
+        position: relative;
+        min-height: 60px;
+      }
+
+      .back-btn {
+        position: absolute;
+        left: 2px;
+        top: -2px;
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: transparent;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 322px;
+        margin: 18px auto 0;
+        padding: 14px 14px 18px;
+        background: #f7f7f7;
+        border-radius: 16px;
+        border: 1px solid rgba(204, 204, 204, 0.95);
+        box-shadow: 0 3px 10px rgba(74, 74, 74, 0.2);
+      }
+
+      .art-frame {
+        height: 170px;
+        border-radius: 12px;
+        border: 3px solid #e3e3e3;
+        background: #efefef;
+        overflow: hidden;
+      }
+
+      .art-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .exercise-title {
+        margin: 16px 0 0;
+        text-align: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 32px;
+        color: #2f98fb;
+      }
+
+      .exercise-prescription {
+        margin: 6px 0 0;
+        text-align: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 16px;
+        font-weight: 600;
+        color: #969696;
+      }
+
+      .exercise-copy {
+        margin: 18px auto 0;
+        max-width: 250px;
+        text-align: center;
+        font-family: "Poppins", Helvetica;
+        font-size: 13px;
+        line-height: 18px;
+        color: #545454;
+      }
+
+      .instructions-box {
+        margin-top: 18px;
+        padding: 14px;
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: inset 0 0 0 1px rgba(223, 223, 223, 0.95);
+      }
+
+      .instructions-label {
+        margin: 0 0 8px;
+        font-family: "Poppins", Helvetica;
+        font-size: 12px;
+        font-weight: 600;
+        color: #8a8a8a;
+      }
+
+      .instructions-list {
+        margin: 0;
+        padding-left: 18px;
+        font-family: "Poppins", Helvetica;
+        font-size: 13px;
+        line-height: 18px;
+        color: #545454;
+      }
+
+      .instructions-list li + li {
+        margin-top: 6px;
+      }
+
+      .actions {
+        width: 100%;
+        max-width: 322px;
+        margin: 22px auto 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .primary-btn,
+      .secondary-btn,
+      .text-link {
+        cursor: pointer;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 220px;
+        min-height: 42px;
+        border-radius: 20px;
+        font-family: "Poppins", Helvetica;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .primary-btn {
+        border: none;
+        background: #289cff;
+        color: #ffffff;
+      }
+
+      .secondary-btn {
+        border: 2px solid #289cff;
+        background: #ffffff;
+        color: #289cff;
+      }
+
+      .text-link {
+        border: none;
+        background: transparent;
+        color: #289cff;
+        font-family: "Poppins", Helvetica;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="top-row">
+        <button
+          class="back-btn"
+          type="button"
+          aria-label="Back to exercises"
+          onclick="window.location.href='exercises.html';"
+        >
+          &larr;
+        </button>
+      </div>
+
+      <section class="card">
+        <div class="art-frame">
+          <img id="exercise-image" src="" alt="Exercise illustration" />
+        </div>
+
+        <h1 class="exercise-title" id="exercise-name"></h1>
+        <p class="exercise-prescription" id="exercise-prescription"></p>
+        <p class="exercise-copy" id="exercise-copy"></p>
+
+        <div class="instructions-box">
+          <p class="instructions-label">How to do it</p>
+          <ol class="instructions-list" id="instructions-list"></ol>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button class="primary-btn" type="button" onclick="handleAddToWorkout()">
+          Add to Workout
+        </button>
+        <button class="secondary-btn" type="button" onclick="handleStartExercise()">
+          Start Exercise
+        </button>
+        <button class="text-link" type="button" onclick="window.location.href='exercises.html';">
+          Back to Exercises
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const selectedExerciseName =
+        localStorage.getItem("easyfit.selectedExerciseName") || "Deep Squat";
+
+      const plan = ensureSessionState(getOrCreateGeneratedWorkoutPlan());
+
+      const exerciseLibrary = {
+        "Deep Squat": {
+          name: "Deep Squat",
+          prescription: "2 sets x 10 reps",
+          image: getExerciseImageSrc("Deep Squat"),
+          copy:
+            "Deep Squat is a great exercise because it helps develop lower-body strength and control while supporting your workout goals.",
+          instructions: [
+            "Stand shoulder-width apart and brace your core.",
+            "Lower by pushing your hips back and bending your knees.",
+            "Keep your chest lifted and heels grounded.",
+            "Drive through your feet to stand tall again."
+          ]
+        },
+        "Wide Push Ups": {
+          name: "Wide Push Ups",
+          prescription: "2 sets x 8 reps",
+          image: getExerciseImageSrc("Wide Push Ups"),
+          copy:
+            "Wide Push Ups help build upper-body strength and challenge the chest, shoulders, and arms.",
+          instructions: [
+            "Start in a plank with hands placed wider than shoulder-width.",
+            "Keep your body in one straight line.",
+            "Lower your chest with control.",
+            "Push back up without letting your hips drop."
+          ]
+        },
+        "Chest Dips": {
+          name: "Chest Dips",
+          prescription: "2 sets x 6 reps",
+          image: getExerciseImageSrc("Chest Dips"),
+          copy:
+            "Chest Dips are effective for upper-body pushing strength, especially the chest and triceps.",
+          instructions: [
+            "Support yourself on the bars with your shoulders stable.",
+            "Lean slightly forward.",
+            "Lower with control to a comfortable depth.",
+            "Press back up steadily."
+          ]
+        },
+        "Chin Ups": {
+          name: "Chin Ups",
+          prescription: "2 sets x 4 reps",
+          image: getExerciseImageSrc("Chin Ups"),
+          copy:
+            "Chin Ups improve upper-body pulling strength and help develop the back and arms.",
+          instructions: [
+            "Grab the bar with palms facing toward you.",
+            "Brace your core and pull upward.",
+            "Lift until your chin clears the bar if possible.",
+            "Lower back down with control."
+          ]
+        },
+        "Push Press": {
+          name: "Shoulder Press",
+          prescription: "2 sets x 10 reps",
+          image: getExerciseImageSrc("Push Press"),
+          copy:
+            "Shoulder Press strengthens the shoulders and helps improve overhead control and power.",
+          instructions: [
+            "Hold the weight near shoulder height.",
+            "Brace your core and keep your chest lifted.",
+            "Press the weight upward until your arms extend.",
+            "Lower back down with control."
+          ]
+        },
+        "Situps": {
+          name: "Sit Ups",
+          prescription: "2 sets x 12 reps",
+          image: getExerciseImageSrc("Situps"),
+          copy:
+            "Sit Ups help build core strength and trunk control for everyday movement and exercise.",
+          instructions: [
+            "Lie on your back with knees bent.",
+            "Brace your core before lifting.",
+            "Curl your chest upward with control.",
+            "Lower slowly back to the floor."
+          ]
+        }
+      };
+
+      const selectedExercise =
+        exerciseLibrary[selectedExerciseName] || exerciseLibrary["Deep Squat"];
+
+      document.getElementById("exercise-image").src = selectedExercise.image;
+      document.getElementById("exercise-image").alt = selectedExercise.name;
+      document.getElementById("exercise-name").textContent = selectedExercise.name;
+      document.getElementById("exercise-prescription").textContent = selectedExercise.prescription;
+      document.getElementById("exercise-copy").textContent = selectedExercise.copy;
+
+      const instructionsList = document.getElementById("instructions-list");
+      selectedExercise.instructions.forEach((step) => {
+        const item = document.createElement("li");
+        item.textContent = step;
+        instructionsList.appendChild(item);
+      });
+
+      function handleAddToWorkout() {
+        const currentPlan = ensureSessionState(getOrCreateGeneratedWorkoutPlan());
+
+        const alreadyExists = currentPlan.exercises.some(
+          (exercise) => exercise.name === selectedExerciseName
+        );
+
+        if (!alreadyExists) {
+          currentPlan.exercises.push({
+            name: selectedExerciseName,
+            prescription: selectedExercise.prescription,
+            instructions: selectedExercise.instructions,
+            durationMinutes: 5
+          });
+
+          currentPlan.estimatedSessionMinutes = currentPlan.exercises.reduce(
+            (total, exercise) => total + (Number(exercise.durationMinutes) || 0),
+            0
+          );
+
+          currentPlan.estimatedTotalMinutes =
+            currentPlan.estimatedSessionMinutes * currentPlan.daysPerWeek;
+
+          saveGeneratedWorkoutPlan(currentPlan);
+        }
+
+        window.location.href = "workout.html";
+      }
+
+      function handleStartExercise() {
+        const currentPlan = ensureSessionState(getOrCreateGeneratedWorkoutPlan());
+        const matchedIndex = currentPlan.exercises.findIndex(
+          (exercise) => exercise.name === selectedExerciseName
+        );
+
+        if (matchedIndex >= 0) {
+          currentPlan.session.currentExerciseIndex = matchedIndex;
+          currentPlan.session.isCompleted = false;
+          currentPlan.session.breakState = null;
+          saveGeneratedWorkoutPlan(currentPlan);
+          window.location.href = "session.html";
+          return;
+        }
+
+        currentPlan.exercises.push({
+          name: selectedExerciseName,
+          prescription: selectedExercise.prescription,
+          instructions: selectedExercise.instructions,
+          durationMinutes: 5
+        });
+
+        currentPlan.session.currentExerciseIndex = currentPlan.exercises.length - 1;
+        currentPlan.session.isCompleted = false;
+        currentPlan.session.breakState = null;
+
+        currentPlan.estimatedSessionMinutes = currentPlan.exercises.reduce(
+          (total, exercise) => total + (Number(exercise.durationMinutes) || 0),
+          0
+        );
+
+        currentPlan.estimatedTotalMinutes =
+          currentPlan.estimatedSessionMinutes * currentPlan.daysPerWeek;
+
+        saveGeneratedWorkoutPlan(currentPlan);
+        window.location.href = "session.html";
+      }
+    </script>
+  </body>
+</html>

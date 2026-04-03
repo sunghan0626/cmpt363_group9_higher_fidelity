@@ -249,27 +249,34 @@
         gap: 12px;
       }
 
-      .start-btn {
+      .start-btn,
+      .dashboard-btn {
         width: 210px;
         min-height: 41px;
-        background-color: #289cff;
         border-radius: 20px;
-        border: none;
         cursor: pointer;
         font-family: "Poppins", Helvetica;
         font-weight: 400;
-        color: #ffffff;
-        font-size: 24px;
+        font-size: 18px;
         text-align: center;
         transition: background-color 0.2s, transform 0.1s;
       }
 
-      .start-btn:hover {
-        background-color: #1887e8;
+      .start-btn {
+        background-color: #289cff;
+        border: none;
+        color: #ffffff;
       }
 
-      .start-btn:active {
-        transform: scale(0.97);
+      .dashboard-btn {
+        background: #ffffff;
+        border: 2px solid #289cff;
+        color: #289cff;
+      }
+
+      .start-btn:hover,
+      .dashboard-btn:hover {
+        transform: scale(0.98);
       }
 
       .secondary-link {
@@ -338,8 +345,11 @@
         <button class="start-btn" type="button" onclick="handleStartNow()">
           Start now
         </button>
+        <button class="dashboard-btn" type="button" onclick="window.location.href='dashboard.html';">
+          Go to Dashboard
+        </button>
         <a class="secondary-link" href="chatbot.html">Ask AI coach</a>
-        <a class="secondary-link" href="loading.html">Regenerate preview</a>
+        <a class="secondary-link" href="regeneratePreview()">Regenerate preview</a>
       </div>
     </div>
 
@@ -416,6 +426,10 @@
         }
 
         window.location.href = "session.html";
+      }
+
+      function regeneratePreview() {
+        window.location.href = "loading.html";
       }
 
       renderPlan();

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Exercise Search</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleguide.css') }}" />
+    <script src="{{ url_for('static', filename='js/workout-plan.js') }}"></script>
+    <style>
+      .frame {
+        width: 100%;
+        max-width: 402px;
+        min-height: 100vh;
+        min-height: 100svh;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 44px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0 18px 18px;
+      }
+
+      @media (max-width: 420px) {
+        .frame {
+          border-radius: 0;
+          max-width: 100%;
+        }
+      }
+
+      .status-bar {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 6px 16px;
+      }
+
+      .time {
+        display: flex;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 1.5px;
+      }
+
+      .text-wrapper {
+        font-family: "SF Pro-Semibold", Helvetica;
+        font-size: 17px;
+        line-height: 22px;
+      }
+
+      .levels {
+        width: 78px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .search-shell {
+        position: relative;
+        min-height: 56px;
+        border-radius: 24px;
+        background: #a8d2f8;
+        display: flex;
+        align-items: center;
+        padding: 0 52px 0 52px;
+        margin-bottom: 18px;
+      }
+
+      .search-left,
+      .search-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #5b5b5b;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .search-left {
+        left: 16px;
+      }
+
+      .search-right {
+        right: 16px;
+      }
+
+      .search-left svg,
+      .search-right svg {
+        width: 24px;
+        height: 24px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .search-input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-family: "Poppins", Helvetica;
+        font-size: 15px;
+        color: #4d4d4d;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .card {
+        background: #f3f3f3;
+        border-radius: 14px;
+        padding: 14px 12px 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+        border: none;
+      }
+
+      .card img {
+        display: block;
+        width: 100%;
+        height: 110px;
+        object-fit: contain;
+      }
+
+      .card-title {
+        margin: 10px 0 0;
+        text-align: center;
+        font-family: "Protest Riot", Helvetica;
+        color: #289cff;
+        font-size: 18px;
+        line-height: 1.1;
+      }
+
+      .navbar {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: #a8d2f8;
+        border-radius: 0 0 18px 18px;
+        overflow: hidden;
+      }
+
+      .nav-item {
+        min-height: 56px;
+        border: none;
+        background: transparent;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .nav-item--active {
+        background: #289cff;
+      }
+
+      .nav-item svg {
+        width: 28px;
+        height: 28px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame">
+      <div class="status-bar">
+        <div class="time"><div class="text-wrapper">9:41</div></div>
+        <img
+          class="levels"
+          src="{{ url_for('static', filename='images/status-icons.svg') }}"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="search-shell">
+        <span class="search-left" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 7h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 17h16"></path>
+          </svg>
+        </span>
+        <input
+          class="search-input"
+          id="search-input"
+          type="text"
+          placeholder="Search keywords for exercises"
+          autocomplete="off"
+        />
+        <span class="search-right" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6"></circle>
+            <path d="M20 20l-4-4"></path>
+          </svg>
+        </span>
+      </div>
+
+      <div class="grid" id="exercise-grid"></div>
+
+      <div class="navbar">
+        <button class="nav-item" type="button" onclick="window.location.href='dashboard.html';">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8"></circle>
+            <path d="M12 8v4l3 2"></path>
+          </svg>
+        </button>
+        <button class="nav-item nav-item--active" type="button" onclick="window.location.href='exercises.html';">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6"></circle>
+            <path d="M20 20l-4-4"></path>
+          </svg>
+        </button>
+        <button class="nav-item" type="button" aria-label="Food page coming soon">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 3v7"></path>
+            <path d="M10 3v7"></path>
+            <path d="M7 7h3"></path>
+            <path d="M10 21V10"></path>
+            <path d="M17 3c1.5 2 1.5 5 0 7"></path>
+            <path d="M17 21V10"></path>
+          </svg>
+        </button>
+        <button class="nav-item" type="button" aria-label="Stats page coming soon">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 20h16"></path>
+            <path d="M7 16v-4"></path>
+            <path d="M12 16V8"></path>
+            <path d="M17 16v-6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const allExercises = [
+        { name: "Shoulder Press", sourceName: "Push Press", image: getExerciseImageSrc("Push Press") },
+        { name: "Chin ups", sourceName: "Chin Ups", image: getExerciseImageSrc("Chin Ups") },
+        { name: "Wide push ups", sourceName: "Wide Push Ups", image: getExerciseImageSrc("Wide Push Ups") },
+        { name: "Sit ups", sourceName: "Situps", image: getExerciseImageSrc("Situps") },
+        { name: "Chest dips", sourceName: "Chest Dips", image: getExerciseImageSrc("Chest Dips") },
+        { name: "Deep squat", sourceName: "Deep Squat", image: getExerciseImageSrc("Deep Squat") }
+      ];
+
+      const exerciseGrid = document.getElementById("exercise-grid");
+      const searchInput = document.getElementById("search-input");
+
+      function openExerciseDetail(sourceName) {
+        localStorage.setItem("easyfit.selectedExerciseName", sourceName);
+        window.location.href = "exercise-detail.html";
+      }
+
+      function renderExercises(filterText = "") {
+        exerciseGrid.innerHTML = "";
+        const normalized = filterText.trim().toLowerCase();
+
+        allExercises
+          .filter((exercise) => exercise.name.toLowerCase().includes(normalized))
+          .forEach((exercise) => {
+            const card = document.createElement("button");
+            const image = document.createElement("img");
+            const title = document.createElement("p");
+
+            card.className = "card";
+            card.type = "button";
+            card.onclick = () => openExerciseDetail(exercise.sourceName);
+
+            image.src = exercise.image;
+            image.alt = exercise.name;
+
+            title.className = "card-title";
+            title.textContent = exercise.name;
+
+            card.appendChild(image);
+            card.appendChild(title);
+            exerciseGrid.appendChild(card);
+          });
+      }
+
+      searchInput.addEventListener("input", (event) => {
+        renderExercises(event.target.value);
+      });
+
+      renderExercises();
+    </script>
+  </body>
+</html>

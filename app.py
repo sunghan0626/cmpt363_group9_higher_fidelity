@@ -21,6 +21,9 @@ PAGE_TEMPLATES = {
     "break.html",
     "chatbot.html",
     "complete.html",
+    "dashboard.html",
+    "exercises.html",
+    "exercise-detail.html",
 }
 
 app = Flask(__name__)

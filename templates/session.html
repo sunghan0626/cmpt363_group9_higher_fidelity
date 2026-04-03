@@ -181,19 +181,28 @@
         color: #676767;
       }
 
-      .instructions-btn {
+      .instructions-btn,
+      .coach-btn {
         min-width: 128px;
         min-height: 34px;
         margin-top: 18px;
         padding: 0 18px;
         border: none;
         border-radius: 18px;
-        background: #a8a8a8;
         color: #ffffff;
         font-family: "Poppins", Helvetica;
         font-size: 12px;
         font-weight: 600;
         cursor: pointer;
+      }
+
+      .instructions-btn {
+        background: #a8a8a8;
+      }
+
+      .coach-btn {
+        background: #289cff;
+        margin-top: 10px;
       }
 
       .instructions-panel {
@@ -254,11 +263,6 @@
         line-height: 1;
         cursor: pointer;
         padding: 0;
-      }
-
-      .next-arrow-btn[disabled] {
-        opacity: 0.45;
-        cursor: not-allowed;
       }
 
       .below-card {
@@ -425,6 +429,14 @@
               onclick="toggleInstructions()"
             >
               Instructions
+            </button>
+
+            <button
+              class="coach-btn"
+              type="button"
+              onclick="window.location.href='chatbot.html';"
+            >
+              Ask AI Coach
             </button>
 
             <div class="instructions-panel" id="instructions-panel" hidden>
